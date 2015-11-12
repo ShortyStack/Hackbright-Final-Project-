@@ -1,20 +1,21 @@
-from flask import Flask, render_template, redirect, url_for, request, flash
+from flask import Flask, render_template, redirect, url_for, request, flash, session
 from model import db, connect_to_db, User
+from flask_debugtoolbar import DebugToolbarExtension
 
 app = Flask(__name__)
 
 app.secret_key = "banana"
 
 
-@app.route('/')
-def landing_page():
-    """Homepage"""
-    # # If not logged in, redirect to log in page, else sent to dashboard
-    # if not session.get('user_id'):
-    #     return redirect("/login")
-    # else:
-    #     return redirect("/dashboard")
-    return render_template("homepage.html")
+# @app.route('/')
+# def landing_page():
+#     """Homepage"""
+#     # # If not logged in, redirect to log in page, else sent to dashboard
+#     # if not session.get('user_id'):
+#     #     return redirect("/login")
+#     # else:
+#     #     return redirect("/dashboard")
+#     return render_template("homepage.html")
 
 
 # @app.route("/register")
@@ -24,18 +25,32 @@ def landing_page():
 #     return render_template('register.html')
 
 
-@app.route("/register-process", methods=['POST', 'GET'])
+@app.route("/register-process", methods=['POST'])
 def register_process():
     """Add user to database. login_submit"""
+# inputs form the form checking the db to see if user is in DB already 
+    email = request.form['email']
+    password = request.form['password']
+    zipcode = request.form['zipcode']
+    street_address = request.form['address']
 
-    user = User(email=request.form['email'], password=request.form['password'], zipcode=request.form['zipcode'], street_address=request.form['address'])
+    new_user = User(email=email, password=password, zipcode=zipcode, address=address)
 
-    db.session.add(user)
+    same_email_user = User.query.filter(User.email == email).first()
+
+    if same_email_user:
+        flash("email already registered")
+        return redirect("/login")
+
+    db.session.add(new_user)
     db.session.commit()
 
-    return "register successful!"
-    flash('User successfully registered')
-    return redirect(url_for("homepage.html"))
+    user = User.query.filter_by(email=email).first()
+
+    flash("You have created your account")
+    session["user_id"] = user.user_id
+
+    return redirect(url_for("/homepage.html"))
 
 
 ####################Login Page ################################################
@@ -45,7 +60,7 @@ def register_process():
 def login_form():
     """Process login"""
 
-    return render_template("login_form.html")
+    return render_template("register.html")
 
 
 @app.route("/login-process", methods=['POST'])
@@ -59,7 +74,10 @@ def login_process():
 
     user = User.query.filter_by(email=email).first()
     print user
-    print user.user_id
+    # print user.user_id
+
+    
+
 
     if not user:
         flash("No such user")
@@ -68,13 +86,11 @@ def login_process():
     if user.password != password:
         flash("incorrect password")
         return redirect("/login")
-
-    session["user_id"] = user.user_id
+    else:
+        session["user_id"] = user.user_id
 
     flash("Logged in")
-    return redirect("/users/%s" % user.user_id)
-
-    return "Monsters are cool"
+    return redirect("/homepage.html")
 
 
 
@@ -111,17 +127,6 @@ def submit_address_for_food_order():
     return render_template("order_food.html")
 
 
-
-
-
-
-
-
-
-
-
-
-
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the point
     # that we invoke the DebugToolbarExtension
@@ -130,6 +135,5 @@ if __name__ == "__main__":
     connect_to_db(app)
 
     # Use the DebugToolbar
-    # DebugToolbarExtension(app)
-
+    DebugToolbarExtension(app)
     app.run()

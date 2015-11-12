@@ -12,23 +12,38 @@
 
 </head>
 
-<body>
-<div class="navbar navbar-inverse navbar-static-top">
-    <div class="container">
+      <body>
+      <div class="navbar navbar-inverse navbar-static-top">
+          <div class="container">
 
-        <div class="navbar-header">
-            <!-- <img src="Image"> -->
-            <a class="navbar-brand" href="/">Netflix and Chow</a>
-        </div>
+              <div class="navbar-header">
+                  <!-- <img src="Image"> -->
+                  <a class="navbar-brand" href="/">Netflix and Chow</a>
+              </div>
 
-        <div class="navbar-collapse collapse">
-            <ul class="nav navbar-nav navbar-right">
-                <li><a href="/login">Log In</a></li>
-                <li><a href="/register">Create An Account</a></li>
-              </li>
-            </ul>
-        </div>
+              <div class="navbar-collapse collapse">
+                  <ul class="nav navbar-nav navbar-right">
+                      <li><a href="/login">Log In</a></li>
+                      <li><a href="/register">Create An Account</a></li>
+                    </li>
+                  </ul>
+              </div>
 
-    </div>
-</div>
+          </div>
+      </div>
 
+<!--#######################    FLASK FLASH    ##################-->
+
+           {% for flash in get_flashed_messages() %}
+               {{ flash }}
+           {% endfor %}
+
+<!--#######################    CONTENT   ##################-->
+
+           <div id="content">
+               {% block content %}
+               <!--HTML BODY CONTENT HERE-->
+               {% endblock %}
+           </div>
+</html>
+</head>
