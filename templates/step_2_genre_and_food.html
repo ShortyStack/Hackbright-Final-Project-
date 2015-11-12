@@ -1,0 +1,59 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Genre and Cuisine</title>
+
+    </head>
+  <!-- Choose a genre to get a randomly chosen movie -->
+  
+    <h1>Movie Genre</h1>
+    <div class="border">
+        Please choose your genre:
+    <br><br>
+    </div>
+
+<form action="/step_3" method="post">
+
+<select>
+  <option value="action">Action and Adventure</option>
+  <option value="anime">Anime</option>
+  <option value="children and family">Children and Family</option>
+  <option value="classic movie">Classic Movie</option>
+  <option value="comedies">Comedies</option>
+  <option value="documentaries">Documentaries</option>
+  <option value="dramas">Dramas</option>
+  <option value="foreign">Foreign</option>
+  <option value="gay and lesbian">Gay and Lesbian</option>
+  <option value="horror">Horror</option>
+  <option value="independent">Independent</option>
+  <option value="oscar winning">Oscar Winning</option>
+  <option value="romance">Romance</option>
+  <option value="sci-fi and fantasy">Sci-Fi and Fantasy</option>
+  <option value="sports">Sports</option>
+  <option value="thrillers">Thrillers</option>
+  <option value="tv shows">TV Shows</option>
+</select>
+<br><br>
+<input type="submit" value="Submit">
+ 
+ <!-- Input address to get a randomly chosen restaurant based on location  -->
+
+ <h1>What is for Dinner?</h1>
+    <div class="border">
+        Please enter your information:
+    <br><br>
+    </div>
+<form action="/input_address" method="post">
+   <br>
+    <label>Street Address:<br>
+        <input type="text" name="address">
+        <br><br>
+
+    <label>Zipcode:<br>
+        <input type="number" name="zipcode">
+        <br><br>
+ 
+ <input type="submit" value="Find Restaurant">
+</body>
+</html>

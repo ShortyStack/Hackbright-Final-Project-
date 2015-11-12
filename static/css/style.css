@@ -1,0 +1,16 @@
+body {
+    background-color: WhiteSmoke;
+}
+
+h1 {
+    color: white;
+    margin-left: 100px;
+}
+
+.navbar {
+  background-color: #888888;
+}
+
+.nav navbar-nav {
+  background-color: #888888;
+}

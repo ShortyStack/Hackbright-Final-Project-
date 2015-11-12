@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Bootstrap Example</title>
+  <title>Modal</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
@@ -11,9 +11,11 @@
 <body>
 
 <div class="container">
-  <h2>Order</h2>
+  <h2>Chez Fancy Restaurant</h2>
   <!-- Trigger the modal with a button -->
-  <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Place Order</button>
+  <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Order Food</button>
+
+  <form action="/step_2" method="post">
 
   <!-- Modal -->
   <div class="modal fade" id="myModal" role="dialog">
@@ -21,13 +23,23 @@
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal">&times;</button>
-          <h4 class="modal-title">Food</h4>
+          <h4 class="modal-title">Delivery.com</h4>
         </div>
         <div class="modal-body">
-          <p>Test.</p>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <form action="/register-process" method="post">
+   <br>
+    <label>Email:<br>
+        <input type="email" name="email"></label>
+        <br><br>
+        
+    <label>Password:<br>
+        <input type="password" name="password" class="bolded"></label>
+        <br><br>
+ 
+ <input type="submit" value="Submit">
+</form>
         </div>
       </div>
     </div>

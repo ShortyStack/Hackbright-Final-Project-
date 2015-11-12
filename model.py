@@ -29,14 +29,15 @@ class User(db.Model):
     password = db.Column(db.String(128), nullable=False)
     street_address = db.Column(db.Text, nullable=False)
     zipcode = db.Column(db.Integer, nullable=False)
+    lat = db.Column(db.Float, nullable=True)
+    lng = db.Column(db.Float, nullable=True)
 
     def __repr__(self):
         """Provide helpful representation when printed."""
         return "<User user_id={} email={}>".format(self.user_id, self.email)
 
     def hash_password(self, password):
-        """Used for setting a hashed+salted password.
-        :param password:"""
+        """Used for setting a hashed+salted password"""
 
         self.password_hash = generate_password_hash(password)
 
