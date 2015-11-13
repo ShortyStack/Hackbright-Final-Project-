@@ -4,37 +4,27 @@ from flask_debugtoolbar import DebugToolbarExtension
 
 app = Flask(__name__)
 
-app.secret_key = "banana"
+app.secret_key = "mnsdfjehfvnvjakjf"
 
 
-# @app.route('/')
-# def landing_page():
-#     """Homepage"""
-#     # # If not logged in, redirect to log in page, else sent to dashboard
-#     # if not session.get('user_id'):
-#     #     return redirect("/login")
-#     # else:
-#     #     return redirect("/dashboard")
-#     return render_template("homepage.html")
+@app.route("/register", methods=["GET"])
+def registration_form():
+    """Process login"""
 
-
-# @app.route("/register")
-# def register_page():
-#     """Serving registration form"""
-
-#     return render_template('register.html')
-
+    return render_template("register.html")
 
 @app.route("/register-process", methods=['POST'])
 def register_process():
     """Add user to database. login_submit"""
-# inputs form the form checking the db to see if user is in DB already 
+# inputs form the form checking the db to see if user is in DB already
     email = request.form['email']
     password = request.form['password']
     zipcode = request.form['zipcode']
     street_address = request.form['address']
 
-    new_user = User(email=email, password=password, zipcode=zipcode, address=address)
+    print "register-process", email, password, zipcode, street_address
+
+    new_user = User(email=email, password=password, zipcode=zipcode, street_address=street_address)
 
     same_email_user = User.query.filter(User.email == email).first()
 
@@ -45,12 +35,12 @@ def register_process():
     db.session.add(new_user)
     db.session.commit()
 
-    user = User.query.filter_by(email=email).first()
+    # user = User.query.filter_by(email=email).first()
 
     flash("You have created your account")
-    session["user_id"] = user.user_id
+    session["user_id"] = new_user.user_id
 
-    return redirect(url_for("/homepage.html"))
+    return redirect("/homepage")
 
 
 ####################Login Page ################################################
@@ -60,7 +50,7 @@ def register_process():
 def login_form():
     """Process login"""
 
-    return render_template("register.html")
+    return render_template("login_form.html")
 
 
 @app.route("/login-process", methods=['POST'])
@@ -76,9 +66,6 @@ def login_process():
     print user
     # print user.user_id
 
-    
-
-
     if not user:
         flash("No such user")
         return redirect("/login")
@@ -90,7 +77,7 @@ def login_process():
         session["user_id"] = user.user_id
 
     flash("Logged in")
-    return redirect("/homepage.html")
+    return redirect("/homepage")
 
 
 

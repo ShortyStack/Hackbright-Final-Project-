@@ -13,6 +13,13 @@
 </head>
 
       <body>
+
+      {% if 'user_id' in session %}
+        LOGGED IN
+      {% else %}
+         SHOW LOGIN LINK HERE
+      {% endif %}
+
       <div class="navbar navbar-inverse navbar-static-top">
           <div class="container">
 
