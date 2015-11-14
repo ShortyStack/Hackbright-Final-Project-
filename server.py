@@ -1,10 +1,21 @@
 from flask import Flask, render_template, redirect, url_for, request, flash, session
 from model import db, connect_to_db, User
 from flask_debugtoolbar import DebugToolbarExtension
+from jinja2 import StrictUndefined
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static')
 
-app.secret_key = "mnsdfjehfvnvjakjf"
+# If you want to generate random key, go into Python and type:
+# >>> import os
+# >>> os.urandom(24)
+app.secret_key = "&\xd9\x9d\x14\x0b\xa7\xdc\xa1fJ;\xa2-\xff\xc9\x9fdh\xfc.\xa9\xdf\xc1\x99"
+
+
+@app.route("/")
+def homepage():
+    """ This is the homepage """
+
+    return render_template("homepage.html")
 
 
 @app.route("/register", methods=["GET"])
@@ -13,10 +24,11 @@ def registration_form():
 
     return render_template("register.html")
 
+
 @app.route("/register-process", methods=['POST'])
 def register_process():
     """Add user to database. login_submit"""
-# inputs form the form checking the db to see if user is in DB already
+    # inputs form the form checking the db to see if user is in DB already
     email = request.form['email']
     password = request.form['password']
     zipcode = request.form['zipcode']
@@ -40,7 +52,7 @@ def register_process():
     flash("You have created your account")
     session["user_id"] = new_user.user_id
 
-    return redirect("/homepage")
+    return redirect("/")
 
 
 ####################Login Page ################################################
@@ -80,9 +92,6 @@ def login_process():
     return redirect("/homepage")
 
 
-
-
-
 ############################################################################
 
 @app.route("/step_2", methods=["GET"])
@@ -114,13 +123,23 @@ def submit_address_for_food_order():
     return render_template("order_food.html")
 
 
-if __name__ == "__main__":
-    # We have to set debug=True here, since it has to be True at the point
+def main():
+        # We have to set debug=True here, since it has to be True at the point
     # that we invoke the DebugToolbarExtension
     app.debug = True
 
+    # Raise error if Jinja encounters a problem
+    app.jinja_env.undefined = StrictUndefined
+
+    # Connect to the database
     connect_to_db(app)
 
     # Use the DebugToolbar
     DebugToolbarExtension(app)
+
+    # Start the webserver
     app.run()
+
+
+if __name__ == "__main__":
+    main()
