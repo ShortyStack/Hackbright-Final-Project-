@@ -2,55 +2,55 @@
 <html>
 <head>
 
-  <title>Netflix and Chow</title>
-
-  <link rel="stylesheet"
+    <link rel="stylesheet"
           href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.4/cosmo/bootstrap.min.css"/>
-          <!-- link the css below -->
+    <!-- link the css below -->
     <link rel="stylesheet" href="/static/css/style.css"/>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
 
+    <title>{% block title %}{% endblock %}</title>
 
 </head>
 
-      <body>
+<body>
 
-      {% if 'user_id' in session %}
-        LOGGED IN
-      {% else %}
-         SHOW LOGIN LINK HERE
-      {% endif %}
+{% if 'user_id' in session %}
+LOGGED IN
+{% else %}
+SHOW LOGIN LINK HERE
+{% endif %}
 
-      <div class="navbar navbar-inverse navbar-static-top">
-          <div class="container">
+<div class="navbar navbar-inverse navbar-static-top">
+    <div class="container">
 
-              <div class="navbar-header">
-                  <!-- <img src="Image"> -->
-                  <a class="navbar-brand" href="/">Netflix and Chow</a>
-              </div>
+        <div class="navbar-header">
+            <!-- <img src="Image"> -->
+            <a class="navbar-brand" href="/">Netflix and Chow</a>
+        </div>
 
-              <div class="navbar-collapse collapse">
-                  <ul class="nav navbar-nav navbar-right">
-                      <li><a href="/login">Log In</a></li>
-                      <li><a href="/register">Create An Account</a></li>
-                    </li>
-                  </ul>
-              </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="/login">Log In</a></li>
+                <li><a href="/register">Create An Account</a></li>
+                </li>
+            </ul>
+        </div>
 
-          </div>
-      </div>
+    </div>
+</div>
 
 <!--#######################    FLASK FLASH    ##################-->
 
-           {% for flash in get_flashed_messages() %}
-               {{ flash }}
-           {% endfor %}
+{% for flash in get_flashed_messages() %}
+{{ flash }}
+{% endfor %}
 
 <!--#######################    CONTENT   ##################-->
 
-           <div id="content">
-               {% block content %}
-               <!--HTML BODY CONTENT HERE-->
-               {% endblock %}
-           </div>
+<div id="content">
+    {% block content %}
+    <!--HTML BODY CONTENT HERE-->
+    {% endblock %}
+</div>
 </html>
 </head>

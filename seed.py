@@ -6,7 +6,7 @@ from model import User
 
 
 from model import connect_to_db, db
-from routes import app
+from server import app
 
 from datetime import datetime 
 

@@ -1,8 +1,32 @@
-from flask import Flask, render_template, redirect, url_for, request, flash, session
-from model import db, connect_to_db, User
-from flask_debugtoolbar import DebugToolbarExtension
-from jinja2 import StrictUndefined
+# coding=utf-8
 
+
+"""
+Netflix and Chow
+Written by: Wendy Zenone (2015-11-14)
+"""
+
+
+# Import libraries
+import os
+import requests
+from flask import Flask, render_template, redirect, url_for, request, flash, session
+from flask_debugtoolbar import DebugToolbarExtension
+from functools import wraps
+from jinja2 import StrictUndefined
+from model import db, connect_to_db, User
+from random import choice
+
+
+# Configuration for delivery.com and movie APIs
+DELIVERY_API_KEY = os.environ["DELIVERY_ACCESS_TOKEN_KEY"]
+DELIVERY_BASE_API_URL = 'https://api.delivery.com'  # Production Environment
+DELIVERY_ENDPOINT = '/merchant/search/delivery'
+DEFAULT_METHOD = 'delivery'
+DEFAULT_MERCHANT_TYPE = 'R'
+
+
+# Create Flask object
 app = Flask(__name__, static_folder='static')
 
 # If you want to generate random key, go into Python and type:
@@ -11,52 +35,40 @@ app = Flask(__name__, static_folder='static')
 app.secret_key = "&\xd9\x9d\x14\x0b\xa7\xdc\xa1fJ;\xa2-\xff\xc9\x9fdh\xfc.\xa9\xdf\xc1\x99"
 
 
+############################################################################
+# Make sure a user is logged in to access protected resources
+
+def login_required(f):
+    """
+    This will require a user to be logged in to access a protected route
+    """
+
+    @wraps(f)
+    def decorated_function():
+        """
+        The function that does the login enforcement
+        """
+        if not session.get('user_id'):
+            return redirect(url_for('homepage'))
+        return f()
+    return decorated_function
+
+
+############################################################################
+# Homepage
+
 @app.route("/")
 def homepage():
     """ This is the homepage """
 
-    return render_template("homepage.html")
+    if not session.get("user_id"):
+        return render_template("/homepage.html")
+    else:
+        return redirect("/step_2")
 
 
-@app.route("/register", methods=["GET"])
-def registration_form():
-    """Process login"""
-
-    return render_template("register.html")
-
-
-@app.route("/register-process", methods=['POST'])
-def register_process():
-    """Add user to database. login_submit"""
-    # inputs form the form checking the db to see if user is in DB already
-    email = request.form['email']
-    password = request.form['password']
-    zipcode = request.form['zipcode']
-    street_address = request.form['address']
-
-    print "register-process", email, password, zipcode, street_address
-
-    new_user = User(email=email, password=password, zipcode=zipcode, street_address=street_address)
-
-    same_email_user = User.query.filter(User.email == email).first()
-
-    if same_email_user:
-        flash("email already registered")
-        return redirect("/login")
-
-    db.session.add(new_user)
-    db.session.commit()
-
-    # user = User.query.filter_by(email=email).first()
-
-    flash("You have created your account")
-    session["user_id"] = new_user.user_id
-
-    return redirect("/")
-
-
-####################Login Page ################################################
-
+############################################################################
+# Login
 
 @app.route("/login", methods=["GET"])
 def login_form():
@@ -70,31 +82,70 @@ def login_process():
     """log user into site"""
 
     email = request.form.get("email")
-    print email
     password = request.form.get('password')
-    print password
 
     user = User.query.filter_by(email=email).first()
-    print user
-    # print user.user_id
 
-    if not user:
-        flash("No such user")
-        return redirect("/login")
-
-    if user.password != password:
-        flash("incorrect password")
-        return redirect("/login")
-    else:
+    if user and user.verify_password(password):
+        print "Successful Login: {}".format(email)
+        flash("Logged in")
         session["user_id"] = user.user_id
-
-    flash("Logged in")
-    return redirect("/homepage")
+        session["email"] = user.email
+        session["street_address"] = user.street_address
+        session["zipcode"] = user.zipcode
+        return redirect("/")
+    else:
+        print "Failed login attempt: {}:{}".format(email, password)  # DEBUG - Delete before go-live
+        flash("Invalid login")
+        return redirect("/login")
 
 
 ############################################################################
+# Register
+
+@app.route("/register", methods=["GET"])
+def registration_form():
+    """Display account creation page for the user"""
+
+    return render_template("register.html")
+
+
+@app.route("/register-process", methods=['POST'])
+def register_process():
+    """Add user to database. login_submit"""
+
+    # inputs form the form checking the db to see if user is in DB already
+    email = request.form['email']
+    password = request.form['password']
+    street_address = request.form['address']
+    zipcode = request.form['zipcode']
+
+    # Check if this email address has already registered an account
+    user = User.query.filter_by(email=email).first()
+    print user
+    if user:
+        flash("Email already registered")
+        return redirect("/register")
+    else:
+        # Otherwise, create the account in the db
+        print "Register-process: {}, {}, {}".format(email, street_address, zipcode)
+        new_user = User(email=email, street_address=street_address, zipcode=zipcode, lat=0.0, lng=0.0)
+        new_user.hash_password(password)
+        db.session.add(new_user)
+        db.session.commit()
+        flash("You have created your account")
+        session["user_id"] = new_user.user_id
+        session["email"] = new_user.email
+        session["street_address"] = street_address
+        session["zipcode"] = zipcode
+        return redirect("/")
+
+
+############################################################################
+# Select a genre and input address for food
 
 @app.route("/step_2", methods=["GET"])
+@login_required
 def choose_genre():
     """ User chooses genre """
     # User chooses a genre from the dropdown.
@@ -102,26 +153,77 @@ def choose_genre():
     return render_template("step_2_genre_and_food.html")
 
 
-@app.route('/step_3', methods=["POST"])
-def submit_genre_choice():
+############################################################################
+# Let Netflix and Chow make a food and movie
+
+@app.route("/step_3", methods=["POST"])
+@login_required
+def get_food_choice():
+    """ Submitting address for food delivery """
+    street_address = request.form['address']
+    zipcode = request.form['zipcode']
+
+    # Talk to Delivery.com and get all restaurants in general vicinity
+    restaurant_results = talk_to_delivery_api(street_address, zipcode)
+
+    # From the restaurants returned that are within the general vicinity, pick a random one
+    my_restaurant_dict = pick_random_restaurant(restaurant_results)
+
+    # A random restaurant has been chosen. This shows us what the choice is
+    restaurant_name = my_restaurant_dict['name']
+    restaurant_url = my_restaurant_dict['url']
+    return render_template("step_4_order_food.html", restaurant_name=restaurant_name, restaurant_url=restaurant_url)
+
+
+@app.route('/step_4', methods=["POST"])
+@login_required
+def get_movie_choice():
     """ Submitting genre choice """
     # After user submits genre choice, a movie is randomly chosen for them.
     return render_template("step_3_get_movie.html")
 
 
-@app.route("/step_2", methods=["GET"])
-def input_address():
-    """ User inputs their address """
+############################################################################
+# Delivery.com API helper functions
 
-    return render_template("step_2_genre_and_food.html")
+def talk_to_delivery_api(address, zipcode):
+    """This function will make the request to delivery.com's API, and return the
+    result(s)"""
+
+    # Below creates this: https://api.delivery.com/merchant/search/delivery?client_id=ODYzNzM4Mjg3NGI5YzUxNzdhOGQ4MzE0MmVlN2UzZmRl&address=100 Winchester Circle 95032
+
+    # This is the URL for the API endpoint at delivery.com
+    url = DELIVERY_BASE_API_URL + DELIVERY_ENDPOINT
+
+    # Create a dict that contains the parameters we want to send to the deliver.com's API
+    params = {'client_id': DELIVERY_API_KEY,
+              'address': "{}, {}".format(address, zipcode),
+              'method': DEFAULT_METHOD,
+              'merchant_type': DEFAULT_MERCHANT_TYPE}
+
+    # The requests library has a 'get' function to make the request. We send it the URL and params
+    response = requests.get(url, params=params)  # This makes the request to the deliver.com API
+    results_dict = response.json()
+    # Close/end the network connection to delivery.com's API
+    response.close()
+
+    return results_dict
 
 
-@app.route("/order_food", methods=["POST"])
-def submit_address_for_food_order():
-    """ Submitting address for food delivery """
+def pick_random_restaurant(restaurant_results):
+    """ A random restaurant has been chosen. This shows us what the choice is """
 
-    return render_template("order_food.html")
+    # I need to take the results, filter out all the restaurants and give the user
+    # a randomly chosen restaurant.
+    random_choice = choice(restaurant_results['merchants'])
+    restaurant_name = random_choice['summary']['name']
+    restaurant_url = random_choice['summary']['url']['complete']
+    print 'Delivery.com choice: Name: {name}, URL: {url}'.format(name=restaurant_name, url=restaurant_url)
+    return {'name': restaurant_name, 'url': restaurant_url}
 
+
+############################################################################
+# Main routine
 
 def main():
         # We have to set debug=True here, since it has to be True at the point

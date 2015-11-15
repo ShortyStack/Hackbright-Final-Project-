@@ -1,61 +1,34 @@
-<!doctype html>
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <title>Registration</title>
+{% extends "base.html" %}
+{% block title %}Create an Account{% endblock %}
 
-    </head>
-    <h1>Registration Form</h1>
-    <div class="border">
-        Please fill out the following fields:
-    </div>
-    <!-- <head>
-    <link rel="stylesheet" type="text/css" href="styles.css">
-    </head> -->
-<body>
-<form action="/register-process" method="post">
-   <br>
-    <label>Email:<br>
-        <input type="email" name="email"></label>
-        <br><br>
-        
-    <label>Password:<br>
-        <input type="password" name="password" class="bolded"></label>
-        <br><br>
-        
-    <label>Street Address:<br>
-        <input type="text" name="address">
+
+{% block content %}
+
+
+<div class="jumbotron">
+    <h1>Create an Account</h1>
+
+    <form action="/register-process" method="post">
+        <br>
+        <label>Email:<br>
+            <input type="email" name="email" placeholder="Email address"></label>
         <br><br>
 
-    <label>Zipcode:<br>
-        <input type="number" name="zipcode">
+        <label>Password:<br>
+            <input type="password" name="password" class="bolded" placeholder="Password"></label>
         <br><br>
- 
- <input type="submit" value="Submit">
-</form>
-<div>
-    <!--  <h1>Login</h1
 
-     <form action="/login-process" method="POST">
+        <label>Street Address:<br>
+            <input type="text" name="address" placeholder="Street Address"></label>
+        <br><br>
 
-        <div>
-            <label>Email:
-                <input type="email" name="email" required>
-            </label>
-        </div>
+        <label>Zipcode:<br>
+            <input type="number" name="zipcode" placeholder="Zipcode"></label>
+        <br><br>
 
-        <div>
-            <label>Password:
-                <input type="password" name="password" required>
-            </label>
-        </div>
-
-        <div>
-            <input type="submit" value="Log In">
-        </div>
-
+        <input class="btn btn-lg btn-danger btn-block" type="submit" value="Register Account">
     </form>
-</div> -->
 
-</body>
-</html>
+
+</div> <!-- Close Jumbotron div -->
+{% endblock %}

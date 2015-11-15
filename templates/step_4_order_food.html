@@ -1,50 +1,51 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <title>Modal</title>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-</head>
-<body>
+{% extends "base.html" %}
+{% block title %}Your food choice{% endblock %}
 
-<div class="container">
-  <h2>Chez Fancy Restaurant</h2>
-  <!-- Trigger the modal with a button -->
-  <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Order Food</button>
+{% block content %}
 
-  <form action="/step_2" method="post">
 
-  <!-- Modal -->
-  <div class="modal fade" id="myModal" role="dialog">
-    <div class="modal-dialog modal-sm">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
-          <h4 class="modal-title">Delivery.com</h4>
-        </div>
-        <div class="modal-body">
-        </div>
-        <div class="modal-footer">
-          <form action="/register-process" method="post">
-   <br>
-    <label>Email:<br>
-        <input type="email" name="email"></label>
-        <br><br>
-        
-    <label>Password:<br>
-        <input type="password" name="password" class="bolded"></label>
-        <br><br>
- 
- <input type="submit" value="Submit">
-</form>
-        </div>
-      </div>
+<div class="jumbotron">
+
+    <div class="container">
+        <h2>Chez Fancy Restaurant</h2>
+
+        {{ restaurant_name }}
+        <a href="{{ restaurant_url }}" target="_blank">restaurant_url</a>
+        <!-- Trigger the modal with a button -->
+        <!--<button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Order Food</button>-->
+
+        <!--<form action="/step_2" method="post">-->
+
+            <!--&lt;!&ndash; Modal &ndash;&gt;-->
+            <!--<div class="modal fade" id="myModal" role="dialog">-->
+                <!--<div class="modal-dialog modal-sm">-->
+                    <!--<div class="modal-content">-->
+                        <!--<div class="modal-header">-->
+                            <!--<button type="button" class="close" data-dismiss="modal">&times;</button>-->
+                            <!--<h4 class="modal-title">Delivery.com</h4>-->
+                        <!--</div>-->
+                        <!--<div class="modal-body">-->
+                        <!--</div>-->
+                        <!--<div class="modal-footer">-->
+                            <!--<form action="/register-process" method="post">-->
+                                <!--<br>-->
+                                <!--<label>Email:<br>-->
+                                    <!--<input type="email" name="email"></label>-->
+                                <!--<br><br>-->
+
+                                <!--<label>Password:<br>-->
+                                    <!--<input type="password" name="password" class="bolded"></label>-->
+                                <!--<br><br>-->
+
+                                <!--<input type="submit" value="Submit">-->
+                            <!--</form>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</form>-->
     </div>
-  </div>
-</div>
 
-</body>
-</html>
+</div> <!-- Close Jumbotron div -->
+
+{% endblock %}

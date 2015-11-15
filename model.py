@@ -39,7 +39,7 @@ class User(db.Model):
     def hash_password(self, password):
         """Used for setting a hashed+salted password"""
 
-        self.password_hash = generate_password_hash(password)
+        self.password = generate_password_hash(password)
 
     def verify_password(self, password):
 
@@ -47,7 +47,7 @@ class User(db.Model):
         :param password:
         :return:"""
 
-        return check_password_hash(self.password_hash, password)
+        return check_password_hash(self.password, password)
 
 
 class Audit(db.Model):
