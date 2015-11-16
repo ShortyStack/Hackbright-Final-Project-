@@ -22,15 +22,17 @@ Written by: Wendy Zenone (2015-11-14)
 """
 
 
-# Import libraries
+# Import local libraries
 import os
+from random import choice
+
+# Import third party libraries
 import requests
 from flask import Flask, render_template, redirect, url_for, request, flash, session
 from flask_debugtoolbar import DebugToolbarExtension
 from functools import wraps
 from jinja2 import StrictUndefined
 from model import db, connect_to_db, User
-from random import choice
 
 
 # Configuration for delivery.com and movie APIs
@@ -141,7 +143,7 @@ def logout():
 
 
 ############################################################################
-# Register
+# Register a new account
 
 @app.route("/register", methods=["GET"])
 def registration_form():
