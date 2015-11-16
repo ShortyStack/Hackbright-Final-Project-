@@ -1,4 +1,19 @@
 # coding=utf-8
+#
+# TODO:
+# 1. Handle error if no restaurants are returned
+# 2. Add event audit logs (user-agent, referrer, client IP address)
+# 3. Add admin page (add users, delete users, view audit logs)
+# 4. Add non free sources (Amazon, HBO....)
+# 5. Replace genre section to movie source section. (This is in step_2)
+# 6. Add modal windows for movie and food execution
+# 7. Use Ajax to display loading animated gif while talking to API's
+# 8. Add more robust error handling (talk to API and web server is down........)
+# 9. Add geolocation for users food delivery address screen
+#
+# ChangeLog:
+# + Got basic MVP working (2015-11-15)
+#
 
 
 """
@@ -19,11 +34,18 @@ from random import choice
 
 
 # Configuration for delivery.com and movie APIs
-DELIVERY_API_KEY = os.environ["DELIVERY_ACCESS_TOKEN_KEY"]
-DELIVERY_BASE_API_URL = 'https://api.delivery.com'  # Production Environment
+DELIVERY_API_KEY = os.environ["DELIVERY_ACCESS_TOKEN_KEY"]  # Remember to `source secrets.sh` first
+DELIVERY_BASE_API_URL = 'https://api.delivery.com'
 DELIVERY_ENDPOINT = '/merchant/search/delivery'
 DEFAULT_METHOD = 'delivery'
 DEFAULT_MERCHANT_TYPE = 'R'
+
+# Configuration for Guidebox API
+GUIDEBOX_API_KEY = os.environ["GUIDEBOX_API_KEY"]
+GUIDEBOX_BASE_URL = "https://api-public.guidebox.com/v1.43"
+GUIDEBOX_REGION = "US"
+GUIDEBOX_API_DIRECTORY = "movies/all"
+GUIDEBOX_TOTAL_MOVIE_COUNT = 9482
 
 
 # Create Flask object
@@ -51,6 +73,7 @@ def login_required(f):
         if not session.get('user_id'):
             return redirect(url_for('homepage'))
         return f()
+
     return decorated_function
 
 
@@ -88,16 +111,33 @@ def login_process():
 
     if user and user.verify_password(password):
         print "Successful Login: {}".format(email)
-        flash("Logged in")
+        flash("Logged in", 'info')
         session["user_id"] = user.user_id
         session["email"] = user.email
         session["street_address"] = user.street_address
         session["zipcode"] = user.zipcode
+        session["first_name"] = user.first_name
+        session["last_name"] = user.last_name
         return redirect("/")
     else:
         print "Failed login attempt: {}:{}".format(email, password)  # DEBUG - Delete before go-live
-        flash("Invalid login")
+        flash("Invalid login", "info")
         return redirect("/login")
+
+
+############################################################################
+# Logout
+
+@app.route("/logout")
+@login_required
+def logout():
+    """ User logs out """
+
+    audit_user_id = session["user_id"]
+    session.clear()
+    # TODO: Audit this event
+    flash("You have been logged out", "info")
+    return redirect("/")
 
 
 ############################################################################
@@ -119,25 +159,30 @@ def register_process():
     password = request.form['password']
     street_address = request.form['address']
     zipcode = request.form['zipcode']
+    first_name = request.form['first_name']
+    last_name = request.form['last_name']
 
     # Check if this email address has already registered an account
     user = User.query.filter_by(email=email).first()
     print user
     if user:
-        flash("Email already registered")
+        flash("Email already registered", "info")
         return redirect("/register")
     else:
         # Otherwise, create the account in the db
         print "Register-process: {}, {}, {}".format(email, street_address, zipcode)
-        new_user = User(email=email, street_address=street_address, zipcode=zipcode, lat=0.0, lng=0.0)
+        new_user = User(email=email, street_address=street_address, zipcode=zipcode, first_name=first_name,
+                        last_name=last_name)
         new_user.hash_password(password)
         db.session.add(new_user)
         db.session.commit()
-        flash("You have created your account")
+        flash("You have created your account", "info")
         session["user_id"] = new_user.user_id
         session["email"] = new_user.email
         session["street_address"] = street_address
         session["zipcode"] = zipcode
+        session["first_name"] = first_name
+        session["last_name"] = last_name
         return redirect("/")
 
 
@@ -154,7 +199,7 @@ def choose_genre():
 
 
 ############################################################################
-# Let Netflix and Chow make a food and movie
+# Let Netflix and Chow make a food and movie choice
 
 @app.route("/step_3", methods=["POST"])
 @login_required
@@ -172,7 +217,34 @@ def get_food_choice():
     # A random restaurant has been chosen. This shows us what the choice is
     restaurant_name = my_restaurant_dict['name']
     restaurant_url = my_restaurant_dict['url']
-    return render_template("step_4_order_food.html", restaurant_name=restaurant_name, restaurant_url=restaurant_url)
+
+    # Lets pick a movie
+    random_movie = choice(xrange(1, GUIDEBOX_TOTAL_MOVIE_COUNT))
+    url = "{}/{}/{}/{}/{}/1/free/all".format(GUIDEBOX_BASE_URL, GUIDEBOX_REGION, GUIDEBOX_API_KEY,
+                                             GUIDEBOX_API_DIRECTORY, random_movie)
+    print "Movie url: ".format(url)
+    response = requests.get(url)
+    response_dict = response.json()
+
+    # Extract the movie data. [0] is the index of the movie as it returns only 1
+    movie_title = response_dict["results"][0]["title"]
+    movie_rating = response_dict["results"][0]["rating"]
+    movie_release_year = response_dict["results"][0]["release_year"]
+    movie_imdb = response_dict["results"][0]["imdb"]
+    movie_id = response_dict["results"][0]["id"]
+    movie_poster = response_dict["results"][0]["poster_240x342"]
+
+    # Get playback information for movie
+    url = "{}/{}/{}/movie/{}".format(GUIDEBOX_BASE_URL, GUIDEBOX_REGION, GUIDEBOX_API_KEY, movie_id)
+    response = requests.get(url)
+    response_dict = response.json()
+    movie_playback_url = response_dict["free_web_sources"][0]["link"]
+    movie_service = response_dict["free_web_sources"][0]["display_name"]
+
+    return render_template("step_4_order_food.html", restaurant_name=restaurant_name, restaurant_url=restaurant_url,
+                           movie_title=movie_title, movie_rating=movie_rating, movie_release_year=movie_release_year,
+                           movie_poster=movie_poster, movie_playback_url=movie_playback_url,
+                           movie_service=movie_service)
 
 
 @app.route('/step_4', methods=["POST"])
@@ -226,7 +298,7 @@ def pick_random_restaurant(restaurant_results):
 # Main routine
 
 def main():
-        # We have to set debug=True here, since it has to be True at the point
+    # We have to set debug=True here, since it has to be True at the point
     # that we invoke the DebugToolbarExtension
     app.debug = True
 

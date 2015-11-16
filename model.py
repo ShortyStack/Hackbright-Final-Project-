@@ -29,8 +29,8 @@ class User(db.Model):
     password = db.Column(db.String(128), nullable=False)
     street_address = db.Column(db.Text, nullable=False)
     zipcode = db.Column(db.Integer, nullable=False)
-    lat = db.Column(db.Float, nullable=True)
-    lng = db.Column(db.Float, nullable=True)
+    first_name = db.Column(db.Text, nullable=False)
+    last_name = db.Column(db.Text, nullable=False)
 
     def __repr__(self):
         """Provide helpful representation when printed."""

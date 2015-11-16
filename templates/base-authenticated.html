@@ -30,8 +30,8 @@
 
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="/login">Log In</a></li>
-                <li><a href="/register">Create An Account</a></li>
+                <li>Welcome, {{ session['first_name'] }}</li>
+                <li><a href="/logout">Logout</a></li>
                 </li>
             </ul>
         </div>
