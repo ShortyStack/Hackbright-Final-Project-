@@ -47,7 +47,6 @@ GUIDEBOX_API_KEY = os.environ["GUIDEBOX_API_KEY"]
 GUIDEBOX_BASE_URL = "https://api-public.guidebox.com/v1.43"
 GUIDEBOX_REGION = "US"
 GUIDEBOX_API_DIRECTORY = "movies/all"
-GUIDEBOX_TOTAL_MOVIE_COUNT = 9482
 
 
 # Create Flask object
@@ -207,8 +206,13 @@ def choose_genre():
 @login_required
 def get_food_choice():
     """ Submitting address for food delivery """
+
+    ###################
+    # Food
     street_address = request.form['address']
     zipcode = request.form['zipcode']
+    # movie_source = request.form['movie_source']
+    movie_source = 'free'
 
     # Talk to Delivery.com and get all restaurants in general vicinity
     restaurant_results = talk_to_delivery_api(street_address, zipcode)
@@ -220,11 +224,20 @@ def get_food_choice():
     restaurant_name = my_restaurant_dict['name']
     restaurant_url = my_restaurant_dict['url']
 
+    ###################
     # Lets pick a movie
-    random_movie = choice(xrange(1, GUIDEBOX_TOTAL_MOVIE_COUNT))
-    url = "{}/{}/{}/{}/{}/1/free/all".format(GUIDEBOX_BASE_URL, GUIDEBOX_REGION, GUIDEBOX_API_KEY,
-                                             GUIDEBOX_API_DIRECTORY, random_movie)
-    print "Movie url: ".format(url)
+    # First, let's find the total number of titles in the category/source
+    url = "{}/{}/{}/{}/1/1/{}/all".format(GUIDEBOX_BASE_URL, GUIDEBOX_REGION, GUIDEBOX_API_KEY,
+                                          GUIDEBOX_API_DIRECTORY, movie_source)
+    response = requests.get(url)
+    response_dict = response.json()
+    movie_count = int(response_dict['total_results'])
+
+    # Next, let's pick a random movie
+    random_movie = choice(xrange(1, movie_count))
+    url = "{}/{}/{}/{}/{}/1/{}/all".format(GUIDEBOX_BASE_URL, GUIDEBOX_REGION, GUIDEBOX_API_KEY,
+                                           GUIDEBOX_API_DIRECTORY, random_movie, movie_source)
+    print "Guidebox API url: {}".format(url)
     response = requests.get(url)
     response_dict = response.json()
 
@@ -238,10 +251,21 @@ def get_food_choice():
 
     # Get playback information for movie
     url = "{}/{}/{}/movie/{}".format(GUIDEBOX_BASE_URL, GUIDEBOX_REGION, GUIDEBOX_API_KEY, movie_id)
+    print "Guidebox URL for \"{}\": {}".format(movie_title, url)
     response = requests.get(url)
     response_dict = response.json()
-    movie_playback_url = response_dict["free_web_sources"][0]["link"]
-    movie_service = response_dict["free_web_sources"][0]["display_name"]
+    if response_dict["tv_everywhere_web_sources"]:
+        movie_service = response_dict["tv_everywhere_web_sources"][0]["display_name"]
+        movie_playback_url = response_dict["tv_everywhere_web_sources"][0]["link"]
+    if response_dict["subscription_web_sources"]:
+        movie_service = response_dict["subscription_web_sources"][0]["display_name"]
+        movie_playback_url = response_dict["subscription_web_sources"][0]["link"]
+    if response_dict["purchase_web_sources"]:
+        movie_service = response_dict["purchase_web_sources"][0]["display_name"]
+        movie_playback_url = response_dict["purchase_web_sources"][0]["link"]
+    if response_dict["free_web_sources"]:  # Will need to iterate to get all sources
+        movie_service = response_dict["free_web_sources"][0]["display_name"]
+        movie_playback_url = response_dict["free_web_sources"][0]["link"]
 
     return render_template("step_4_order_food.html", restaurant_name=restaurant_name, restaurant_url=restaurant_url,
                            movie_title=movie_title, movie_rating=movie_rating, movie_release_year=movie_release_year,
