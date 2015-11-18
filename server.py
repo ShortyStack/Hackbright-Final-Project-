@@ -4,16 +4,16 @@
 # 1. Handle error if no restaurants are returned
 # 2. Add event audit logs (user-agent, referrer, client IP address)
 # 3. Add admin page (add users, delete users, view audit logs)
-# 4. Add non free sources (Amazon, HBO....)
-# 5. Replace genre section to movie source section. (This is in step_2)
-# 6. Add modal windows for movie and food execution
-# 7. Use Ajax to display loading animated gif while talking to API's
-# 8. Add more robust error handling (talk to API and web server is down........)
-# 9. Add geolocation for users food delivery address screen
+# 4. Add modal windows for movie and food execution
+# 5. Use Ajax to display loading animated gif while talking to API's
+# 6. Add more robust error handling (talk to API and web server is down........)
+# 7. Add geolocation for users food delivery address screen
+# 8. Deploy to server
 #
 # ChangeLog:
 # + Got basic MVP working (2015-11-15)
-#
+# + Replaced genre section to movie source section. (This is in step_2)
+# + Add non free sources (Amazon, HBO....)
 
 
 """
@@ -211,8 +211,8 @@ def get_food_choice():
     # Food
     street_address = request.form['address']
     zipcode = request.form['zipcode']
-    # movie_source = request.form['movie_source']
-    movie_source = 'free'
+    movie_source = request.form['selection']
+    print "Movie source: {}".format(movie_source)
 
     # Talk to Delivery.com and get all restaurants in general vicinity
     restaurant_results = talk_to_delivery_api(street_address, zipcode)
@@ -227,15 +227,17 @@ def get_food_choice():
     ###################
     # Lets pick a movie
     # First, let's find the total number of titles in the category/source
-    url = "{}/{}/{}/{}/1/1/{}/all".format(GUIDEBOX_BASE_URL, GUIDEBOX_REGION, GUIDEBOX_API_KEY,
+    # API Documentation: https://api.guidebox.com/apidocs#movies
+    url = "{}/{}/{}/{}/1/1/{}/web".format(GUIDEBOX_BASE_URL, GUIDEBOX_REGION, GUIDEBOX_API_KEY,
                                           GUIDEBOX_API_DIRECTORY, movie_source)
     response = requests.get(url)
+    response.close()
     response_dict = response.json()
     movie_count = int(response_dict['total_results'])
 
     # Next, let's pick a random movie
     random_movie = choice(xrange(1, movie_count))
-    url = "{}/{}/{}/{}/{}/1/{}/all".format(GUIDEBOX_BASE_URL, GUIDEBOX_REGION, GUIDEBOX_API_KEY,
+    url = "{}/{}/{}/{}/{}/1/{}/web".format(GUIDEBOX_BASE_URL, GUIDEBOX_REGION, GUIDEBOX_API_KEY,
                                            GUIDEBOX_API_DIRECTORY, random_movie, movie_source)
     print "Guidebox API url: {}".format(url)
     response = requests.get(url)
@@ -254,18 +256,25 @@ def get_food_choice():
     print "Guidebox URL for \"{}\": {}".format(movie_title, url)
     response = requests.get(url)
     response_dict = response.json()
-    if response_dict["tv_everywhere_web_sources"]:
-        movie_service = response_dict["tv_everywhere_web_sources"][0]["display_name"]
-        movie_playback_url = response_dict["tv_everywhere_web_sources"][0]["link"]
-    if response_dict["subscription_web_sources"]:
-        movie_service = response_dict["subscription_web_sources"][0]["display_name"]
-        movie_playback_url = response_dict["subscription_web_sources"][0]["link"]
-    if response_dict["purchase_web_sources"]:
-        movie_service = response_dict["purchase_web_sources"][0]["display_name"]
-        movie_playback_url = response_dict["purchase_web_sources"][0]["link"]
-    if response_dict["free_web_sources"]:  # Will need to iterate to get all sources
+    if movie_source == "hulu_free":
         movie_service = response_dict["free_web_sources"][0]["display_name"]
         movie_playback_url = response_dict["free_web_sources"][0]["link"]
+    if movie_source == "showtime":
+        movie_service = response_dict["subscription_web_sources"][0]["display_name"]
+        movie_playback_url = response_dict["subscription_web_sources"][0]["link"]
+
+    # if response_dict["tv_everywhere_web_sources"]:
+    #     movie_service = response_dict["tv_everywhere_web_sources"][0]["display_name"]
+    #     movie_playback_url = response_dict["tv_everywhere_web_sources"][0]["link"]
+    # if response_dict["subscription_web_sources"]:
+    #     movie_service = response_dict["subscription_web_sources"][0]["display_name"]
+    #     movie_playback_url = response_dict["subscription_web_sources"][0]["link"]
+    # if response_dict["purchase_web_sources"]:
+    #     movie_service = response_dict["purchase_web_sources"][0]["display_name"]
+    #     movie_playback_url = response_dict["purchase_web_sources"][0]["link"]
+    # if response_dict["free_web_sources"]:  # Will need to iterate to get all sources
+    #     movie_service = response_dict["free_web_sources"][0]["display_name"]
+    #     movie_playback_url = response_dict["free_web_sources"][0]["link"]
 
     return render_template("step_4_order_food.html", restaurant_name=restaurant_name, restaurant_url=restaurant_url,
                            movie_title=movie_title, movie_rating=movie_rating, movie_release_year=movie_release_year,

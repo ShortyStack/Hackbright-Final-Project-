@@ -7,34 +7,36 @@
 <div class="jumbotron">
     <!-- Choose a genre to get a randomly chosen movie -->
 
-    <h1>Movie Genre</h1>
+    <h1>Movie Source</h1>
 
     <div class="border">
-        Please choose your genre:
+        Please choose your preferred source:
         <br><br>
     </div>
 
     <form action="/step_3" method="post">
 
-        <select>
-            <option value="action">Action and Adventure</option>
-            <option value="anime">Anime</option>
-            <option value="children and family">Children and Family</option>
-            <option value="classic movie">Classic Movie</option>
-            <option value="comedies">Comedies</option>
-            <option value="documentaries">Documentaries</option>
-            <option value="dramas">Dramas</option>
-            <option value="foreign">Foreign</option>
-            <option value="gay and lesbian">Gay and Lesbian</option>
-            <option value="horror">Horror</option>
-            <option value="independent">Independent</option>
-            <option value="oscar winning">Oscar Winning</option>
-            <option value="romance">Romance</option>
-            <option value="sci-fi and fantasy">Sci-Fi and Fantasy</option>
-            <option value="sports">Sports</option>
-            <option value="thrillers">Thrillers</option>
-            <option value="tv shows">TV Shows</option>
+        <select name="selection">
+            <optgroup label="Free Sources">
+                <option value="amazon">Amazon</option>
+                <option value="xfinity">Xfinity</option>
+                <option value="hulu_free">Hulu</option>
+            </optgroup>
+            <optgroup label="Subscription">
+                <option value="amazon prime">Amazon Prime</option>
+                <option value="hbo now">HBO Now</option>
+                <option value="hulu">Hulu</option>
+                <option value="hulu with showtime">Hulu with Showtime</option>
+                <option value="showtime">Showtime</option>
+            </optgroup>
+            <optgroup label="Purchase">
+                <option value="itunes">iTunes</option>
+                <option value="google play">Google Play</option>
+                <option value="xfinity">Xfinity</option>
+                <option value="amazon">Amazon</option>
+            </optgroup>
         </select>
+
 
         <!-- Input address to get a randomly chosen restaurant based on location  -->
 
