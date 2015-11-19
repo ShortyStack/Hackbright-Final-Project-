@@ -216,13 +216,14 @@ def get_food_choice():
 
     # Talk to Delivery.com and get all restaurants in general vicinity
     restaurant_results = talk_to_delivery_api(street_address, zipcode)
-
+    print restaurant_results
     # From the restaurants returned that are within the general vicinity, pick a random one
     my_restaurant_dict = pick_random_restaurant(restaurant_results)
 
     # A random restaurant has been chosen. This shows us what the choice is
     restaurant_name = my_restaurant_dict['name']
     restaurant_url = my_restaurant_dict['url']
+
 
     ###################
     # Lets pick a movie
@@ -233,7 +234,10 @@ def get_food_choice():
     response = requests.get(url)
     response.close()
     response_dict = response.json()
+    print response_dict
     movie_count = int(response_dict['total_results'])
+
+    # Maybe need to add a try/except here to help with errors.
 
     # Next, let's pick a random movie
     random_movie = choice(xrange(1, movie_count))
@@ -256,27 +260,31 @@ def get_food_choice():
     print "Guidebox URL for \"{}\": {}".format(movie_title, url)
     response = requests.get(url)
     response_dict = response.json()
+    # This will return a random movie from the Hulu Free source
+    if movie_source == "xfinity":
+        movie_service = response_dict["free_web_sources"][0]["display_name"]
+        movie_playback_url = response_dict["free_web_sources"][0]["link"]
+    # if movie_source == "cartoon_network_free":
+    #     movie_service = response_dict["free_web_sources"][0]["display_name"]
+    #     movie_playback_url = response_dict["free_web_sources"][0]["link"]
     if movie_source == "hulu_free":
         movie_service = response_dict["free_web_sources"][0]["display_name"]
         movie_playback_url = response_dict["free_web_sources"][0]["link"]
+    # This will return a random movie from the Showtime subscription source
     if movie_source == "showtime":
         movie_service = response_dict["subscription_web_sources"][0]["display_name"]
         movie_playback_url = response_dict["subscription_web_sources"][0]["link"]
+    if movie_source == "hbo_now":
+        movie_service = response_dict["subscription_web_sources"][0]["display_name"]
+        movie_playback_url = response_dict["subscription_web_sources"][0]["link"]
+        # if response_dict["disney_movies_anywhere"]:
+        # movie_service = response_dict["purchase_web_sources"][0]["display_name"]
+        #     movie_playback_url = response_dict["purchase_web_sources"][0]["link"]
+        
+    # https://api-public.guidebox.com/v1.43/US/rKiNl7heGsSWWC9yN04AaIOWhkHWuP3f/movies/all/1915/1/hulu_free/web
 
-    # if response_dict["tv_everywhere_web_sources"]:
-    #     movie_service = response_dict["tv_everywhere_web_sources"][0]["display_name"]
-    #     movie_playback_url = response_dict["tv_everywhere_web_sources"][0]["link"]
-    # if response_dict["subscription_web_sources"]:
-    #     movie_service = response_dict["subscription_web_sources"][0]["display_name"]
-    #     movie_playback_url = response_dict["subscription_web_sources"][0]["link"]
-    # if response_dict["purchase_web_sources"]:
-    #     movie_service = response_dict["purchase_web_sources"][0]["display_name"]
-    #     movie_playback_url = response_dict["purchase_web_sources"][0]["link"]
-    # if response_dict["free_web_sources"]:  # Will need to iterate to get all sources
-    #     movie_service = response_dict["free_web_sources"][0]["display_name"]
-    #     movie_playback_url = response_dict["free_web_sources"][0]["link"]
-
-    return render_template("step_4_order_food.html", restaurant_name=restaurant_name, restaurant_url=restaurant_url,
+    # End the try?except here
+    return render_template("step_3_order_food.html", restaurant_name=restaurant_name, restaurant_url=restaurant_url,
                            movie_title=movie_title, movie_rating=movie_rating, movie_release_year=movie_release_year,
                            movie_poster=movie_poster, movie_playback_url=movie_playback_url,
                            movie_service=movie_service)
@@ -287,7 +295,7 @@ def get_food_choice():
 def get_movie_choice():
     """ Submitting genre choice """
     # After user submits genre choice, a movie is randomly chosen for them.
-    return render_template("step_3_get_movie.html")
+    return render_template("unused_get_movie.html")
 
 
 ############################################################################
