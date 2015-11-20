@@ -2,23 +2,31 @@
 <html>
 <head>
 
-    <link rel="stylesheet"
-          href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.4/cosmo/bootstrap.min.css"/>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <!-- link the css below -->
     <link rel="stylesheet" href="/static/css/style.css"/>
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
 
     <title>{% block title %}{% endblock %}</title>
 
-</head>
+    <!-- Bootstrap core CSS -->
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
 
+    <!-- Custom styles for this template -->
+    <link href="/static/css/navbar-static-top.css" rel="stylesheet">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="/static/js/bootstrap.min.js"></script>
+
+    <!-- JQuery -->
+    <script src="/static/js/jquery.js"></script>
+
+</head>
 <body>
 
-<!--{% if 'user_id' in session %}-->
-<!--LOGGED IN-->
-<!--{% else %}-->
-<!--SHOW LOGIN LINK HERE-->
-<!--{% endif %}-->
 
 <div class="navbar navbar-inverse navbar-static-top">
     <div class="container">
@@ -32,34 +40,44 @@
             <ul class="nav navbar-nav navbar-right">
                 <li>Welcome, {{ session['first_name'] }}</li>
                 <li><a href="/logout">Logout</a></li>
-                </li>
             </ul>
         </div>
 
     </div>
 </div>
 
+
 <!--#######################    FLASK FLASH    ##################-->
 
 {% with messages = get_flashed_messages(with_categories=true) %}
-    <!-- Categories: success (green), info (blue), warning (yellow), danger (red) -->
-    {% if messages %}
-        {% for category, message in messages %}
-            <div class="alert alert-{{ category }} alert-dismissible" role="alert">
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
-                        aria-hidden="true">&times;</span></button>
-                <!-- <strong>Title</strong> --> {{ message }}
-            </div>
-        {% endfor %}
-    {% endif %}
+<!-- Categories: success (green), info (blue), warning (yellow), danger (red) -->
+{% if messages %}
+{% for category, message in messages %}
+<div class="alert alert-{{ category }} alert-dismissible" role="alert">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+            aria-hidden="true">&times;</span></button>
+    <!-- <strong>Title</strong> --> {{ message }}
+</div>
+{% endfor %}
+{% endif %}
 {% endwith %}
 
 <!--#######################    CONTENT   ##################-->
+
 
 <div id="content">
     {% block content %}
     <!--HTML BODY CONTENT HERE-->
     {% endblock %}
 </div>
+
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="/static/js/jquery.min.js"></script>
+<script src="/static/js/bootstrap.min.js"></script>
+<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+<script src="/static/js/ie10-viewport-bug-workaround.js"></script>
+
+</body>
 </html>
-</head>

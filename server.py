@@ -1,19 +1,18 @@
 # coding=utf-8
 #
 # TODO:
-# 1. Handle error if no restaurants are returned
-# 2. Add event audit logs (user-agent, referrer, client IP address)
-# 3. Add admin page (add users, delete users, view audit logs)
-# 4. Add modal windows for movie and food execution
-# 5. Use Ajax to display loading animated gif while talking to API's
-# 6. Add more robust error handling (talk to API and web server is down........)
-# 7. Add geolocation for users food delivery address screen
-# 8. Deploy to server
+# 1. Add more robust error handling (talk to API and web server is down........)  *
+# 2. Add admin page (add users, delete users, view audit logs)
+# 4. Add modal windows for movie and food execution  ***
+# 5. Use Ajax to display loading animated gif while talking to API's  *
+# 6. Add geolocation for users food delivery address screen  **
+# 7. Deploy to [Heroku] server  *
 #
 # ChangeLog:
 # + Got basic MVP working (2015-11-15)
 # + Replaced genre section to movie source section. (This is in step_2)
 # + Add non free sources (Amazon, HBO....)
+# + Add event audit logs (user-agent, referrer, client IP address)
 
 
 """
@@ -24,15 +23,16 @@ Written by: Wendy Zenone (2015-11-14)
 
 # Import local libraries
 import os
+from datetime import datetime
 from random import choice
 
 # Import third party libraries
 import requests
-from flask import Flask, render_template, redirect, url_for, request, flash, session
+from flask import Flask, jsonify, render_template, redirect, url_for, request, flash, session
 from flask_debugtoolbar import DebugToolbarExtension
 from functools import wraps
 from jinja2 import StrictUndefined
-from model import db, connect_to_db, User
+from model import db, connect_to_db, User, Audit
 
 
 # Configuration for delivery.com and movie APIs
@@ -119,10 +119,12 @@ def login_process():
         session["zipcode"] = user.zipcode
         session["first_name"] = user.first_name
         session["last_name"] = user.last_name
+        audit_event(event="User successfully logged in")
         return redirect("/")
     else:
         print "Failed login attempt: {}:{}".format(email, password)  # DEBUG - Delete before go-live
         flash("Invalid login", "info")
+        audit_event(event="Failed login attempt ({}:{})".format(email, password))
         return redirect("/login")
 
 
@@ -138,6 +140,7 @@ def logout():
     session.clear()
     # TODO: Audit this event
     flash("You have been logged out", "info")
+    audit_event(event="User logged out")
     return redirect("/")
 
 
@@ -184,6 +187,7 @@ def register_process():
         session["zipcode"] = zipcode
         session["first_name"] = first_name
         session["last_name"] = last_name
+        audit_event(event="New user registered ({})".format(session['email']))
         return redirect("/")
 
 
@@ -204,19 +208,22 @@ def choose_genre():
 
 @app.route("/step_3", methods=["POST"])
 @login_required
-def get_food_choice():
+def get_choices_a():
     """ Submitting address for food delivery """
+    session['address_choice'] = request.form['address']
+    session['zipcode_choice'] = request.form['zipcode']
+    session['movie_source'] = request.form['selection']
+    print "Movie source: {}".format(session['movie_source'])
+    return render_template("step_3_order_food.html")
 
+
+@app.route("/get_choices")
+@login_required
+def get_choices_b():
     ###################
     # Food
-    street_address = request.form['address']
-    zipcode = request.form['zipcode']
-    movie_source = request.form['selection']
-    print "Movie source: {}".format(movie_source)
-
     # Talk to Delivery.com and get all restaurants in general vicinity
-    restaurant_results = talk_to_delivery_api(street_address, zipcode)
-    print restaurant_results
+    restaurant_results = talk_to_delivery_api(session['address_choice'], session['zipcode_choice'])
     # From the restaurants returned that are within the general vicinity, pick a random one
     my_restaurant_dict = pick_random_restaurant(restaurant_results)
 
@@ -224,17 +231,15 @@ def get_food_choice():
     restaurant_name = my_restaurant_dict['name']
     restaurant_url = my_restaurant_dict['url']
 
-
     ###################
     # Lets pick a movie
     # First, let's find the total number of titles in the category/source
     # API Documentation: https://api.guidebox.com/apidocs#movies
     url = "{}/{}/{}/{}/1/1/{}/web".format(GUIDEBOX_BASE_URL, GUIDEBOX_REGION, GUIDEBOX_API_KEY,
-                                          GUIDEBOX_API_DIRECTORY, movie_source)
+                                          GUIDEBOX_API_DIRECTORY, session['movie_source'])
     response = requests.get(url)
     response.close()
     response_dict = response.json()
-    print response_dict
     movie_count = int(response_dict['total_results'])
 
     # Maybe need to add a try/except here to help with errors.
@@ -242,7 +247,7 @@ def get_food_choice():
     # Next, let's pick a random movie
     random_movie = choice(xrange(1, movie_count))
     url = "{}/{}/{}/{}/{}/1/{}/web".format(GUIDEBOX_BASE_URL, GUIDEBOX_REGION, GUIDEBOX_API_KEY,
-                                           GUIDEBOX_API_DIRECTORY, random_movie, movie_source)
+                                           GUIDEBOX_API_DIRECTORY, random_movie, session['movie_source'])
     print "Guidebox API url: {}".format(url)
     response = requests.get(url)
     response_dict = response.json()
@@ -261,33 +266,34 @@ def get_food_choice():
     response = requests.get(url)
     response_dict = response.json()
     # This will return a random movie from the Hulu Free source
-    if movie_source == "xfinity":
+    if session['movie_source'] == "xfinity":
         movie_service = response_dict["free_web_sources"][0]["display_name"]
         movie_playback_url = response_dict["free_web_sources"][0]["link"]
-    # if movie_source == "cartoon_network_free":
-    #     movie_service = response_dict["free_web_sources"][0]["display_name"]
-    #     movie_playback_url = response_dict["free_web_sources"][0]["link"]
-    if movie_source == "hulu_free":
+    if session['movie_source'] == "disney_movies_anywhere":
+        movie_service = response_dict["purchase_web_sources"][0]["display_name"]
+        movie_playback_url = response_dict["purchase_web_sources"][0]["link"]
+    if session['movie_source'] == "hulu_free":
         movie_service = response_dict["free_web_sources"][0]["display_name"]
         movie_playback_url = response_dict["free_web_sources"][0]["link"]
     # This will return a random movie from the Showtime subscription source
-    if movie_source == "showtime":
+    if session['movie_source'] == "showtime":
         movie_service = response_dict["subscription_web_sources"][0]["display_name"]
         movie_playback_url = response_dict["subscription_web_sources"][0]["link"]
-    if movie_source == "hbo_now":
+    if session['movie_source'] == "hbo_now":
         movie_service = response_dict["subscription_web_sources"][0]["display_name"]
         movie_playback_url = response_dict["subscription_web_sources"][0]["link"]
-        # if response_dict["disney_movies_anywhere"]:
-        # movie_service = response_dict["purchase_web_sources"][0]["display_name"]
-        #     movie_playback_url = response_dict["purchase_web_sources"][0]["link"]
-        
+    if session['movie_source'] == "itunes":
+        movie_service = response_dict["purchase_web_sources"][0]["display_name"]
+        movie_playback_url = response_dict["purchase_web_sources"][0]["link"]
+
     # https://api-public.guidebox.com/v1.43/US/rKiNl7heGsSWWC9yN04AaIOWhkHWuP3f/movies/all/1915/1/hulu_free/web
 
-    # End the try?except here
-    return render_template("step_3_order_food.html", restaurant_name=restaurant_name, restaurant_url=restaurant_url,
-                           movie_title=movie_title, movie_rating=movie_rating, movie_release_year=movie_release_year,
-                           movie_poster=movie_poster, movie_playback_url=movie_playback_url,
-                           movie_service=movie_service)
+    # End the try/except here
+    data = dict(restaurant_name=restaurant_name, restaurant_url=restaurant_url, movie_title=movie_title,
+                movie_rating=movie_rating, movie_release_year=movie_release_year, movie_poster=movie_poster,
+                movie_playback_url=movie_playback_url, movie_service=movie_service)
+    audit_event(event="Random Choice - Restaurant: {}, Movie: {}".format(restaurant_name, movie_title))
+    return jsonify(data)
 
 
 @app.route('/step_4', methods=["POST"])
@@ -335,6 +341,24 @@ def pick_random_restaurant(restaurant_results):
     restaurant_url = random_choice['summary']['url']['complete']
     print 'Delivery.com choice: Name: {name}, URL: {url}'.format(name=restaurant_name, url=restaurant_url)
     return {'name': restaurant_name, 'url': restaurant_url}
+
+
+############################################################################
+# Auditing
+
+def audit_event(user_id=None, event=None):
+    """ Function to write audit events into database table named 'audit' """
+
+    if not user_id:
+        if 'user_id' in session:
+            user_id = session['user_id']
+        else:
+            user_id = 1  # User number has to exist...could cretae a user with id=0 for auditing
+    utc_timestamp = datetime.utcnow()
+    entry = Audit(timestamp=utc_timestamp, user_id=user_id, ip=request.remote_addr,
+                  user_agent=request.headers.get('User-Agent'), event=event)
+    db.session.add(entry)
+    db.session.commit()
 
 
 ############################################################################

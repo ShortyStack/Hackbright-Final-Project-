@@ -7,23 +7,28 @@
 <div class="jumbotron">
 
     <div class="container">
-        <h3><b>Chez Fancy Restaurant</b></h3>
 
-        {{ restaurant_name }}
-        <a href="{{ restaurant_url }}" target="_blank">restaurant_url</a>
+        <div id="my_choices"><p></p></div>
 
-        <h3><b>Movie Choice</b></h3>
+        <div id='loadingmessage' style='display:none'>
+            <img class="center-block" src='/static/img/loading.gif'>
+        </div>
 
-        <p>Title: {{ movie_title }}</p>
-
-        <p>Rating: {{ movie_rating }}</p>
-
-        <p>Year: {{ movie_release_year }}</p>
-
-        <p>Service: {{ movie_service }}</p>
-
-        <p>Play Movie: <a href="{{ movie_playback_url }}" target="_blank">Playback Link</a></p>
-        <img src="{{ movie_poster }}">
+        <script>
+            $('#loadingmessage').show();
+            $.getJSON('/get_choices', function (data) {
+                    $('#loadingmessage').hide();
+                    $("#my_choices").append('<h3><b>Your Selection</b></h3>');
+                    $("#my_choices").append('<b>Restaurant:</b> ' + data.restaurant_name + '<br>');
+                    $("#my_choices").append('<b>Restaurant URL:</b><a href="' + data.restaurant_url + '" target="_blank"> Link</a><br>');
+                    $("#my_choices").append('<b>Movie Title:</b> ' + data.movie_title + '<br>');
+                    $("#my_choices").append('<b>Movie Rating:</b> ' + data.movie_rating  + '<br>');
+                    $("#my_choices").append('<b>Movie Release Year:</b> ' + data.movie_release_year  + '<br>');
+                    $("#my_choices").append('<b>Movie Service:</b> ' + data.movie_service + '<br>');
+                    $("#my_choices").append('<b>Movie Playback URL:</b><a href="' + data.movie_playback_url + '" target="_blank"> Link</a><br>');
+                    $("#my_choices").append('<img src="' + data.movie_poster + '">');
+            });
+        </script>
 
 
         <!-- Trigger the modal with a button -->

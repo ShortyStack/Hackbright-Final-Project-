@@ -7,55 +7,58 @@
 <div class="jumbotron">
     <!-- Choose a genre to get a randomly chosen movie -->
 
-    <h3><b>Movie Source</b></h3>
-
-    <div class="border">
-        Please choose your preferred source:
-        <br><br>
-    </div>
-
-    <form action="/step_3" method="post">
-
-        <select name="selection">
-            <optgroup label="Free Sources">
-                <option value="xfinity">Xfinity</option>
-                <option value="hulu_free">Hulu</option>
-                <option value="cartoon_network_free">Cartoon Network</option>
-            </optgroup>
-            <optgroup label="Subscription">
-                <!--<option value="amazon prime">Amazon Prime</option>-->
-                <option value="hbo_now">HBO Now</option>
-                <option value="showtime">Showtime</option>
-            </optgroup>
-            <optgroup label="Purchase">
-                <option value="disney_movies_anywhere">Disney Movies</option>
-                <!--<option value="google play">Google Play</option>-->
-                <!--<option value="xfinity">Xfinity</option>-->
-                <!--<option value="amazon_buy">Amazon Buy</option>-->
-            </optgroup>
-        </select>
-
-
-        <!-- Input address to get a randomly chosen restaurant based on location  -->
-
-        <h3><b>What is for Dinner?</b></h3>
+    <div class="container">
+        <h3><b>Movie Source</b></h3>
 
         <div class="border">
-            Please enter your information:
+            Please choose your preferred source:
             <br><br>
         </div>
 
-        <label>Street Address:<br>
-            <input type="text" name="address" value="{{ session['street_address'] }}"></label>
-        <br><br>
+        <div>
+            <form action="/step_3" method="post">
 
-        <label>Zipcode:<br>
-            <input type="number" name="zipcode" value="{{ session['zipcode'] }}"></label>
-        <br><br>
+                <select name="selection">
+                    <optgroup label="Free Sources">
+                        <option value="xfinity">Xfinity</option>
+                        <option value="hulu_free">Hulu</option>
+                        <option value="cartoon_network_free">Cartoon Network</option>
+                    </optgroup>
+                    <optgroup label="Subscription">
+                        <!--<option value="amazon prime">Amazon Prime</option>-->
+                        <option value="hbo_now">HBO Now</option>
+                        <option value="showtime">Showtime</option>
+                    </optgroup>
+                    <optgroup label="Purchase">
+                        <option value="itunes">iTunes</option>
+                        <option value="disney_movies_anywhere">Disney Movies</option>
+                        <!--<option value="xfinity">Xfinity</option>-->
+                        <!--<option value="amazon_buy">Amazon Buy</option>-->
+                    </optgroup>
+                </select>
 
-        <input type="submit" value="Pick Food and Movie">
-    </form>
 
+                <!-- Input address to get a randomly chosen restaurant based on location  -->
+
+                <h3><b>What is for Dinner?</b></h3>
+
+                <div class="border">
+                    Please enter your information:
+                    <br><br>
+                </div>
+
+                <label>Street Address:<br>
+                    <input type="text" name="address" value="{{ session['street_address'] }}"></label>
+                <br><br>
+
+                <label>Zipcode:<br>
+                    <input type="number" name="zipcode" value="{{ session['zipcode'] }}"></label>
+                <br><br>
+
+                <input type="submit" value="Pick Food and Movie">
+            </form>
+        </div>
+    </div> <!-- Close Container -->
 </div> <!-- Close Jumbotron div -->
 
 {% endblock %}
