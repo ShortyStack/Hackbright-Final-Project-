@@ -1,5 +1,5 @@
-1|AUDIT@AUDIT.LOG|Audit!@2015!|Audit Street|00000|Audit|Auditdrop|False
-2|james@gmail.com|abc123|444 Jones St. |12311|James|Bond|False
-3|vader@sith.com|force|555 DeathStar Rd. |95005|Darth|Vader|False
-4|luke@jedi.com|lightsaber|123 Tatooine St.|95005|Luke|Skywalker|False
-5|wendy@zenone.org|password|123 Street|90210|Wendy|Zenone|True
+0|AUDIT@AUDIT.LOG|Audit!@2015!|Audit Street|00000|Audit|Auditdrop|0
+1|wendy@zenone.org|password|123 Street|90210|Wendy|Zenone|1
+2|james@gmail.com|abc123|444 Jones St. |12311|James|Bond|0
+3|vader@sith.com|force|555 DeathStar Rd. |95005|Darth|Vader|0
+4|luke@jedi.com|lightsaber|123 Tatooine St.|95005|Luke|Skywalker|0

@@ -20,15 +20,18 @@ def load_users():
         # Another for loop to iterate through
         for i in range(len(line_list)):
             line_list[i] = line_list[i].strip()
-        email, password, street_address, zipcode, first_name, last_name = line_list[1], line_list[2], line_list[3], \
-                                                                          line_list[4], line_list[5], line_list[6]
+        user_id, email, password, street_address, zipcode, first_name, last_name, admin = line_list[0], line_list[1], \
+                                                                                          line_list[2], line_list[3], \
+                                                                                          line_list[4], line_list[5], \
+                                                                                          line_list[6], line_list[7]
+
         print "EMAIL: {}, PASSWORD: {}, STREET_ADDRESS: {}, ZIPCODE: {}, FIRST {}, LAST {}".format(email, password,
                                                                                                    street_address,
                                                                                                    zipcode, first_name,
                                                                                                    last_name)
 
-        user = User(email=email, street_address=street_address, zipcode=zipcode, first_name=first_name,
-                    last_name=last_name)
+        user = User(user_id=user_id, email=email, street_address=street_address, zipcode=zipcode, first_name=first_name,
+                    last_name=last_name, admin=admin)
         user.hash_password(password)
 
         db.session.add(user)
@@ -41,7 +44,7 @@ def load_users():
 
 # Audit.query.delete()
 
-#     for row in open("seed_data/u.movies"):
+# for row in open("seed_data/u.movies"):
 #         #stripping on the right side to remove whitespace
 #         print row
 #         #row = row.strip()

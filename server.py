@@ -63,9 +63,7 @@ app.secret_key = "&\xd9\x9d\x14\x0b\xa7\xdc\xa1fJ;\xa2-\xff\xc9\x9fdh\xfc.\xa9\x
 # Make sure a user is logged in to access protected resources
 
 def login_required(f):
-    """
-    This will require a user to be logged in to access a protected route
-    """
+    """ This will require a user to be logged in to access a protected route """
 
     @wraps(f)
     def decorated_function():
@@ -73,8 +71,27 @@ def login_required(f):
         The function that does the login enforcement
         """
         if not session.get('user_id'):
+            audit_event(event="Unauthorized user tried accessing page that requires login")
             return redirect(url_for('homepage'))
         return f()
+
+    return decorated_function
+
+
+############################################################################
+# Admin Helper Function
+
+def admin_required(f):
+    """ This will be used to require admin """
+
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        """ The decorator itself """
+
+        if not session.get('admin'):
+            audit_event(event="Unauthorized user tried accessing admin page")
+            return redirect(url_for('homepage'))
+        return f(*args, **kwargs)
 
     return decorated_function
 
@@ -120,6 +137,7 @@ def login_process():
         session["zipcode"] = user.zipcode
         session["first_name"] = user.first_name
         session["last_name"] = user.last_name
+        session["admin"] = user.admin
         audit_event(event="User successfully logged in")
         return redirect("/")
     else:
@@ -167,7 +185,7 @@ def register_process():
     zipcode = request.form['zipcode']
     first_name = request.form['first_name']
     last_name = request.form['last_name']
-    admin = request.form['admin']
+    admin = 0
 
     # Check if this email address has already registered an account
     user = User.query.filter_by(email=email).first()
@@ -179,7 +197,7 @@ def register_process():
         # Otherwise, create the account in the db
         print "Register-process: {}, {}, {}".format(email, street_address, zipcode)
         new_user = User(email=email, street_address=street_address, zipcode=zipcode, first_name=first_name,
-                        last_name=last_name)
+                        last_name=last_name, admin=admin)
         new_user.hash_password(password)
         db.session.add(new_user)
         db.session.commit()
@@ -190,7 +208,7 @@ def register_process():
         session["zipcode"] = zipcode
         session["first_name"] = first_name
         session["last_name"] = last_name
-        #session["admin"] = admin - Do I need this??
+        session["admin"] = admin
         audit_event(event="New user registered ({})".format(session['email']))
         return redirect("/")
 
@@ -205,7 +223,7 @@ def manage_users_page():
     """ Manage users """
 
     users = User.query.all()
-    audit_event(events="User accessed admin page")
+    audit_event(event="User accessed admin page")
     return render_template("/administrative/admin.html", users=users)
 
 
@@ -213,16 +231,16 @@ def manage_users_page():
 @login_required
 @admin_required
 def add_user():
-    """ Add user to """
+    """ Add user to db """
 
-    first_name = request.form['first_name']
-    last_name = request.form['last_name']
-    email = request.form['email']
+    first_name = request.form["first_name"]
+    last_name = request.form["last_name"]
+    email = request.form["email"]
     if 'admin' in request.form:
         admin = True
     else:
         admin = False
-    password = request.form['password']
+    password = request.form["password"]
     new_user = User(first_name=first_name, last_name=last_name, email=email, admin=admin)
     new_user.hash_password(password)
     db.session.add(new_user)
@@ -235,9 +253,7 @@ def add_user():
 @login_required
 @admin_required
 def delete_user():
-    """
-    Delete a user from the database
-    """
+    """ Delete a user from the database """
 
     user_id = request.form['user_id']
     email = request.form['email']
@@ -248,20 +264,16 @@ def delete_user():
     return redirect("/admin")
 
 
-@app.route('/audit_logs')
+@app.route("/audit_logs")
 @login_required
 @admin_required
 def audit_logs():
-    """
-    Audit Logs
+    """ Audit Logs """
 
-    :return:
-    """
-
-    return render_template("/administrative/audit.html")
+    return render_template("/audit.html")
 
 
-@app.route('/get_audit_logs', methods=["POST"])
+@app.route("/get_audit_logs", methods=["POST"])
 @login_required
 @admin_required
 def get_audit_logs(page=1, entries=5):
@@ -344,12 +356,15 @@ def get_choices_b():
     response_dict = response.json()
 
     # Extract the movie data. [0] is the index of the movie as it returns only 1
-    movie_title = response_dict["results"][0]["title"]
+    movie_title = response_dict["results"][0]["title"].decode('utf-8')
     movie_rating = response_dict["results"][0]["rating"]
     movie_release_year = response_dict["results"][0]["release_year"]
     movie_imdb = response_dict["results"][0]["imdb"]
     movie_id = response_dict["results"][0]["id"]
-    movie_poster = response_dict["results"][0]["poster_240x342"]
+    if "default_movie_240x342.jpg" in response_dict["results"][0]["poster_240x342"]:
+        movie_poster = "/static/img/rsz_cats_eating.png"
+    else:
+        movie_poster = response_dict["results"][0]["poster_240x342"]
 
     # Get playback information for movie
     url = "{}/{}/{}/movie/{}".format(GUIDEBOX_BASE_URL, GUIDEBOX_REGION, GUIDEBOX_API_KEY, movie_id)
@@ -444,34 +459,12 @@ def audit_event(user_id=None, event=None):
         if 'user_id' in session:
             user_id = session['user_id']
         else:
-            user_id = 1  # User number has to exist...could cretae a user with id=0 for auditing
+            user_id = 0  # User number has to exist...could cretae a user with id=0 for auditing
     utc_timestamp = datetime.utcnow()
     entry = Audit(timestamp=utc_timestamp, user_id=user_id, ip=request.remote_addr,
                   user_agent=request.headers.get('User-Agent'), event=event)
     db.session.add(entry)
     db.session.commit()
-
-
-############################################################################
-# Admin Helper Function
-
-def admin_required(f):
-    """ This will be used to require admin """
-
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        """
-        The decorator itself
-
-        :param args:
-        :param kwargs:
-        :return:
-        """
-        if not session.get('admin'):
-            return redirect(url_for('index', next=request.url))
-        return f(*args, **kwargs)
-
-    return decorated_function
 
 
 ############################################################################
