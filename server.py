@@ -7,6 +7,7 @@
 # 5. Use Ajax to display loading animated gif while talking to API's  *
 # 6. Add geolocation for users food delivery address screen  **
 # 7. Deploy to [Heroku] server  *
+# 8. What do I need to do specifically for the admin information (@app.route ("/login_process")
 #
 # ChangeLog:
 # + Got basic MVP working (2015-11-15)
@@ -159,12 +160,14 @@ def register_process():
     """Add user to database. login_submit"""
 
     # inputs form the form checking the db to see if user is in DB already
+    # Add the admin
     email = request.form['email']
     password = request.form['password']
     street_address = request.form['address']
     zipcode = request.form['zipcode']
     first_name = request.form['first_name']
     last_name = request.form['last_name']
+    admin = request.form['admin']
 
     # Check if this email address has already registered an account
     user = User.query.filter_by(email=email).first()
@@ -187,8 +190,96 @@ def register_process():
         session["zipcode"] = zipcode
         session["first_name"] = first_name
         session["last_name"] = last_name
+        #session["admin"] = admin - Do I need this??
         audit_event(event="New user registered ({})".format(session['email']))
         return redirect("/")
+
+
+############################################################################
+# Administrative
+
+@app.route("/admin", methods=["GET"])
+@login_required
+@admin_required
+def manage_users_page():
+    """ Manage users """
+
+    users = User.query.all()
+    audit_event(events="User accessed admin page")
+    return render_template("/administrative/admin.html", users=users)
+
+
+@app.route("/add_user", methods=["POST"])
+@login_required
+@admin_required
+def add_user():
+    """ Add user to """
+
+    first_name = request.form['first_name']
+    last_name = request.form['last_name']
+    email = request.form['email']
+    if 'admin' in request.form:
+        admin = True
+    else:
+        admin = False
+    password = request.form['password']
+    new_user = User(first_name=first_name, last_name=last_name, email=email, admin=admin)
+    new_user.hash_password(password)
+    db.session.add(new_user)
+    db.session.commit()
+    flash("User {} added".format(email), 'info')
+    return redirect("/admin")
+
+
+@app.route("/delete_user", methods=["POST"])
+@login_required
+@admin_required
+def delete_user():
+    """
+    Delete a user from the database
+    """
+
+    user_id = request.form['user_id']
+    email = request.form['email']
+    user = User.query.filter_by(user_id=user_id, email=email).first()
+    db.session.delete(user)
+    db.session.commit()
+    flash("User {} deleted".format(email), 'info')
+    return redirect("/admin")
+
+
+@app.route('/audit_logs')
+@login_required
+@admin_required
+def audit_logs():
+    """
+    Audit Logs
+
+    :return:
+    """
+
+    return render_template("/administrative/audit.html")
+
+
+@app.route('/get_audit_logs', methods=["POST"])
+@login_required
+@admin_required
+def get_audit_logs(page=1, entries=5):
+    """  Get the audit logs """
+
+    # Logs = Audit.query.filter_by().all()
+    if 'entries' in request.form:
+        entries = int(request.form['entries'])
+    else:
+        entries = entries
+    logs = Audit.query.filter_by().paginate(page=page, per_page=entries)
+    data = {
+        'config': dict(has_next=logs.has_next, has_prev=logs.has_prev, next_num=logs.next_num, prev_num=logs.prev_num),
+        'data': {}}
+    for i, log in enumerate(logs.items):
+        data['data'][i] = dict(id=log.id, utc_timestamp=log.utc_timestamp, warn_level=log.warn_level,
+                               user_id=log.user_id, event=log.event, ip=log.ip, user_agent=log.user_agent)
+    return jsonify(data)
 
 
 ############################################################################
@@ -265,7 +356,7 @@ def get_choices_b():
     print "Guidebox URL for \"{}\": {}".format(movie_title, url)
     response = requests.get(url)
     response_dict = response.json()
-    # This will return a random movie from the Hulu Free source
+    # This will return a random movie from the chosen source
     if session['movie_source'] == "xfinity":
         movie_service = response_dict["free_web_sources"][0]["display_name"]
         movie_playback_url = response_dict["free_web_sources"][0]["link"]
@@ -359,6 +450,28 @@ def audit_event(user_id=None, event=None):
                   user_agent=request.headers.get('User-Agent'), event=event)
     db.session.add(entry)
     db.session.commit()
+
+
+############################################################################
+# Admin Helper Function
+
+def admin_required(f):
+    """ This will be used to require admin """
+
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        """
+        The decorator itself
+
+        :param args:
+        :param kwargs:
+        :return:
+        """
+        if not session.get('admin'):
+            return redirect(url_for('index', next=request.url))
+        return f(*args, **kwargs)
+
+    return decorated_function
 
 
 ############################################################################

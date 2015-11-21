@@ -31,6 +31,7 @@ class User(db.Model):
     zipcode = db.Column(db.Integer, nullable=False)
     first_name = db.Column(db.Text, nullable=False)
     last_name = db.Column(db.Text, nullable=False)
+    admin = db.Column(db.Boolean, nullable=False, default=False)
 
     def __repr__(self):
         """Provide helpful representation when printed."""
