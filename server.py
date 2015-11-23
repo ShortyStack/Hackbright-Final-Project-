@@ -144,7 +144,7 @@ def login_process():
         print "Failed login attempt: {}:{}".format(email, password)  # DEBUG - Delete before go-live
         flash("Invalid login", "info")
         audit_event(event="Failed login attempt ({}:{})".format(email, password))
-        return redirect("/login")
+        return redirect("/")
 
 
 ############################################################################
@@ -213,18 +213,112 @@ def register_process():
         return redirect("/")
 
 
+##############################################################################
+# Profile
+
+@app.route("/profile", methods=["GET", "POST"])
+@login_required
+def users_page():
+    """Manage user profile"""
+    if request.method == 'GET':
+        return render_template("/profile.html",
+                               first_name=session['first_name'],
+                               last_name=session['last_name'],
+                               email=session['email'],
+                               street_address=session['street_address'],
+                               zipcode=session['zipcode'])
+    else:
+        current_password = request.form['current_password']
+        new_password = request.form['new_password']
+        new_password_confirm = request.form['new_password_confirm']
+        street_address = request.form['street_address']
+        zipcode = request.form['zipcode']
+
+        # Load the user's information based upon the email address
+        user = User.query.filter(User.email == session['email']).first()
+
+        # Determine if this is just an address change
+        if not new_password and not new_password_confirm and user.verify_password(current_password):
+            user.street_address = street_address
+            user.zipcode = zipcode
+            db.session.commit()
+            session['street_address'] = street_address
+            session['zipcode'] = zipcode
+            flash("Address successfully changed.", 'info')
+            audit_event(event="User changed address")
+            return redirect("/profile")
+
+        # Else, let's assume this includes a password change
+        elif user.verify_password(current_password):
+            if new_password == new_password_confirm:
+                address_update = False
+                if session['street_address'] != street_address:
+                    user.street_address = street_address
+                    address_update = True
+                if session['zipcode'] != zipcode:
+                    user.zipcode = zipcode
+                    address_update = True
+                user.hash_password(new_password)
+                db.session.commit()
+                session['street_address'] = street_address
+                session['zipcode'] = zipcode
+                if address_update:
+                    audit_event(event="User changed address and password")
+                    flash("Address and password successfully changed.", 'info')
+                else:
+                    audit_event(event="User changed password")
+                    flash("Password successfully changed.", 'info')
+                return redirect("/profile")
+            else:
+                flash("New passwords do not match.", 'info')
+                return redirect("/profile")
+
+        # Otherwise, they entered in the wrong current password.
+        else:
+            flash("Invalid current password.", 'info')
+            return redirect("/profile")
+
+
 ############################################################################
 # Administrative
 
-@app.route("/admin", methods=["GET"])
+@app.route("/audit_logs", methods=["GET"])
+@login_required
+@admin_required
+def audit_logs():
+    """ View Audit Logs """
+    audit_event(event="Audit log page accessed")
+    return render_template("/view_audit_logs.html")
+
+
+@app.route("/get_audit_logs", methods=["POST"])
+@login_required
+@admin_required
+def get_audit_logs(page=1, entries=5):
+    """  Get the audit logs """
+
+    if 'entries' in request.form:
+        entries = int(request.form['entries'])
+    else:
+        entries = entries
+    logs = Audit.query.filter_by().paginate(page=page, per_page=entries)  # Have not gotten to this yet
+    data = {
+        'config': dict(has_next=logs.has_next, has_prev=logs.has_prev, next_num=logs.next_num, prev_num=logs.prev_num),
+        'data': {}}
+    for index, log in enumerate(logs.items):
+        data['data'][index] = dict(id=log.event_id, utc_timestamp=log.timestamp, user_id=log.user_id, event=log.event,
+                                   ip=log.ip, user_agent=log.user_agent)
+    return jsonify(data)
+
+
+@app.route("/users", methods=["GET"])
 @login_required
 @admin_required
 def manage_users_page():
     """ Manage users """
-
     users = User.query.all()
-    audit_event(event="User accessed admin page")
-    return render_template("/administrative/admin.html", users=users)
+    audit_event(event="User administration page accessed")
+    return render_template("/admin_users.html", users=users)
 
 
 @app.route("/add_user", methods=["POST"])
@@ -236,17 +330,20 @@ def add_user():
     first_name = request.form["first_name"]
     last_name = request.form["last_name"]
     email = request.form["email"]
+    address = request.form["address"]
+    zipcode = request.form["zipcode"]
     if 'admin' in request.form:
         admin = True
     else:
         admin = False
     password = request.form["password"]
-    new_user = User(first_name=first_name, last_name=last_name, email=email, admin=admin)
+    new_user = User(first_name=first_name, last_name=last_name, email=email, street_address=address, zipcode=zipcode,
+                    admin=admin)
     new_user.hash_password(password)
     db.session.add(new_user)
     db.session.commit()
     flash("User {} added".format(email), 'info')
-    return redirect("/admin")
+    return redirect("/users")
 
 
 @app.route("/delete_user", methods=["POST"])
@@ -261,37 +358,7 @@ def delete_user():
     db.session.delete(user)
     db.session.commit()
     flash("User {} deleted".format(email), 'info')
-    return redirect("/admin")
-
-
-@app.route("/audit_logs")
-@login_required
-@admin_required
-def audit_logs():
-    """ Audit Logs """
-
-    return render_template("/audit.html")
-
-
-@app.route("/get_audit_logs", methods=["POST"])
-@login_required
-@admin_required
-def get_audit_logs(page=1, entries=5):
-    """  Get the audit logs """
-
-    # Logs = Audit.query.filter_by().all()
-    if 'entries' in request.form:
-        entries = int(request.form['entries'])
-    else:
-        entries = entries
-    logs = Audit.query.filter_by().paginate(page=page, per_page=entries)
-    data = {
-        'config': dict(has_next=logs.has_next, has_prev=logs.has_prev, next_num=logs.next_num, prev_num=logs.prev_num),
-        'data': {}}
-    for i, log in enumerate(logs.items):
-        data['data'][i] = dict(id=log.id, utc_timestamp=log.utc_timestamp, warn_level=log.warn_level,
-                               user_id=log.user_id, event=log.event, ip=log.ip, user_agent=log.user_agent)
-    return jsonify(data)
+    return redirect("/users")
 
 
 ############################################################################

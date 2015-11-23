@@ -28,55 +28,73 @@
 <body>
 
 
-<div class="navbar navbar-inverse navbar-static-top">
-    <div class="container">
+<!--#######################    NAVBAR   ##################-->
 
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
         <div class="navbar-header">
-            <!-- <img src="Image"> -->
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                    aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
             <a class="navbar-brand" href="/">Netflix and Chow</a>
         </div>
-
-        <div class="navbar-collapse collapse">
-            <ul class="nav navbar-nav navbar-right">
-                <li><a href="/login">Log In</a></li>
-                <li><a href="/register">Create An Account</a></li>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
             </ul>
+            {% if request.endpoint == "homepage" %}
+            <form class="navbar-form navbar-right" action="/login-process" method="POST">
+                <div class="form-group">
+                    <input type="text" placeholder="Email" class="form-control" name="email">
+                </div>
+                <div class="form-group">
+                    <input type="password" placeholder="Password" class="form-control" name="password">
+                </div>
+                <button type="submit" class="btn btn-danger">Sign in</button>
+            </form>
+            <a class="btn btn-danger btn-lg navbar-form navbar-right" href="/register" role="button">Create
+                Account</a>
+            {% endif %}
         </div>
-
+        <!--/.nav-collapse -->
     </div>
-</div>
+</nav>
 
-<!--#######################    FLASK FLASH    ##################-->
+
+<!--#######################   FLASH    ##################-->
 
 {% with messages = get_flashed_messages(with_categories=true) %}
-    <!-- Categories: success (green), info (blue), warning (yellow), danger (red) -->
-    {% if messages %}
-        {% for category, message in messages %}
-            <div class="alert alert-{{ category }} alert-dismissible" role="alert">
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
-                        aria-hidden="true">&times;</span></button>
-                <!-- <strong>Title</strong> --> {{ message }}
-            </div>
-        {% endfor %}
-    {% endif %}
+<!-- Categories: success (green), info (blue), warning (yellow), danger (red) -->
+{% if messages %}
+{% for category, message in messages %}
+<div class="alert alert-{{ category }} alert-dismissible" role="alert">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+            aria-hidden="true">&times;</span></button>
+    <!-- <strong>Title</strong> --> {{ message }}
+</div>
+{% endfor %}
+{% endif %}
 {% endwith %}
 
-<!--#######################    CONTENT   ##################-->
 
+<!--#######################  CONTENT   ##################-->
 
-<div id="content">
+<div class="container">
     {% block content %}
-    <!--HTML BODY CONTENT HERE-->
     {% endblock %}
 </div>
 
-<!-- Bootstrap core JavaScript
-================================================== -->
-<!-- Placed at the end of the document so the pages load faster -->
-<script src="/static/js/jquery.min.js"></script>
-<script src="/static/js/bootstrap.min.js"></script>
-<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-<script src="/static/js/ie10-viewport-bug-workaround.js"></script>
+
+<!--#######################    FOOTER   ##################-->
+
+<footer class="footer">
+    <div class="container">
+        <p class="text-muted">Put footer information here, like a disclaimer.</p>
+    </div>
+</footer>
 
 </body>
 </html>

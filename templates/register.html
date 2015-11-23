@@ -6,34 +6,44 @@
 
 
 <div class="jumbotron">
-    <h1>Create an Account</h1>
+    <div class="container">
+        <h1>Create an Account</h1>
 
-    <form action="/register-process" method="post">
-         <label>First Name:<br>
-            <input type="text" name="first_name" placeholder="First name" autofocus></label>
-        <br><br>
-        <label>Last Name:<br>
-            <input type="text" name="last_name" placeholder="Last name"></label>
-        <br><br>
-        <label>Email:<br>
-            <input type="email" name="email" placeholder="Email address"></label>
-        <br><br>
-
-        <label>Password:<br>
-            <input type="password" name="password" placeholder="Password"></label>
-        <br><br>
-
-        <label>Street Address:<br>
-            <input type="text" name="address" placeholder="Street Address"></label>
-        <br><br>
-
-        <label>Zipcode:<br>
-            <input type="number" name="zipcode" placeholder="Zipcode"></label>
-        <br><br>
-
-        <input class="btn btn-lg btn-danger btn-block" type="submit" value="Register Account">
-    </form>
+        <p>Say something creative here.</p>
+    </div>
+</div>
 
 
-</div> <!-- Close Jumbotron div -->
+<div class="container">
+    <div class="row">
+        <div class="col-md-4">
+            <form action="/register-process" method="post">
+                <label>First Name:<br>
+                    <input type="text" name="first_name" placeholder="First name" autofocus></label>
+                <br><br>
+                <label>Last Name:<br>
+                    <input type="text" name="last_name" placeholder="Last name"></label>
+                <br><br>
+                <label>Email:<br>
+                    <input type="email" name="email" placeholder="Email address"></label>
+                <br><br>
+
+                <label>Password:<br>
+                    <input type="password" name="password" placeholder="Password"></label>
+                <br><br>
+
+                <label>Street Address:<br>
+                    <input type="text" name="address" placeholder="Street Address"></label>
+                <br><br>
+
+                <label>Zipcode:<br>
+                    <input type="number" name="zipcode" placeholder="Zipcode"></label>
+                <br><br>
+
+                <input class="btn btn-lg btn-danger btn-block" type="submit" value="Register Account">
+            </form>
+        </div>
+    </div>
+</div>
+
 {% endblock %}

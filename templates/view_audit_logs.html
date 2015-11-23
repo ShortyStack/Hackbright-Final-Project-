@@ -1,0 +1,70 @@
+{% extends "base-authenticated.html" %}
+{% block title %}View Audit Logs{% endblock %}
+
+{% block content %}
+
+
+<div class="jumbotron">
+    <div class="container">
+        <h1>Audit Logs</h1>
+    </div>
+</div>
+
+<table class="table table-striped" id="funds_table">
+    <thead>
+    <tr>
+        <th>Event ID</th>
+        <th>UTC Time</th>
+        <th>Level</th>
+        <th>User ID</th>
+        <th>Event</th>
+        <th>IP</th>
+        <th>User-Agent</th>
+    </tr>
+    </thead>
+    <tbody>
+
+    <div id='loadingmessage' style='display:none'>
+        <img class="center-block" src='/static/img/loading.gif'/>
+    </div>
+
+    <script>
+            $('#loadingmessage').show();
+            $.post('/get_audit_logs', {'entries':500}, function (data) {
+                $.each(data.data, function (i, item) {
+                    var trHTML = $('<tr valign="middle">').append(
+                            $('<td style="vertical-align:middle">' + item.id + '</td>'),
+                            $('<td style="vertical-align:middle">' + item.utc_timestamp + '</td>'),
+                            $('<td style="vertical-align:middle">' + item.warn_level + '</td>'),
+                            $('<td style="vertical-align:middle">' + item.user_id + '</td>'),
+                            $('<td style="vertical-align:middle">' + item.event + '</td>'),
+                            $('<td style="vertical-align:middle">' + item.ip + '</td>'),
+                            $('<td style="vertical-align:middle">' + item.user_agent + '</td>'),
+                            $('</tr>')
+                    );
+                    $('#loadingmessage').hide();
+                    $('#funds_table').append(trHTML);
+                });
+            });
+
+    </script>
+
+    </tbody>
+</table>
+
+<p id="testing"></p>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="input-group">
+
+                <input type="button" value="Reload Logs" class="btn btn-sm btn-primary" role="button"
+                       onClick="window.location.reload()">
+            </div>
+        </div>
+    </div>
+    <!-- /row -->
+</div>
+
+{% endblock %}

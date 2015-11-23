@@ -1,0 +1,115 @@
+{% extends "base-authenticated.html" %}
+{% block title %}Movie and Address{% endblock %}
+
+{% block content %}
+
+
+<div class="jumbotron">
+    <div class="container">
+        <h1>My Profile</h1>
+    </div>
+</div>
+
+
+<!-- Display User's Profile -->
+<div class="container">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">Name</h3>
+        </div>
+        <div class="panel-body">
+            {{ first_name }} {{ last_name }}
+        </div>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">Email</h3>
+        </div>
+        <div class="panel-body">
+            {{ email }}
+        </div>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">Address</h3>
+        </div>
+        <div class="panel-body">
+            <p>{{ street_address }}</p>
+
+            <p>{{ zipcode }}</p>
+        </div>
+    </div>
+
+
+    <!-- Allow User to Modify Their Profile -->
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">Update Profile</h3>
+        </div>
+        <form action="/profile" method="post">
+
+            <div class="panel-body">
+                <div class="col-md-5">
+                    <div class="input-group">
+                        <input type=text name="street_address" class="form-control"
+                               value="{{ session['street_address'] }}"
+                               aria-describedby="basic-addon1">
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-body">
+                <div class="col-md-5">
+                    <div class="input-group">
+                        <input type=number name="zipcode" class="form-control"
+                               value="{{ session['zipcode'] }}"
+                               aria-describedby="basic-addon1">
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="panel-body">
+                <div class="col-md-5">
+                    <p>Current password required to update address</p>
+
+                    <div class="input-group">
+                        <input type=password name="current_password" class="form-control" placeholder="Current Password"
+                               aria-describedby="basic-addon1">
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-body">
+                <div class="col-md-5">
+                    <div class="input-group">
+                        <input type=password name="new_password" class="form-control" placeholder="New Password"
+                               aria-describedby="basic-addon2">
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-body">
+                <div class="col-md-5">
+                    <div class="input-group">
+                        <input type=password name="new_password_confirm" class="form-control"
+                               placeholder="Retype New Password"
+                               aria-describedby="basic-addon3">
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-body">
+                <div class="col-md-1">
+                    <div class="input-group">
+                        <input type="submit" value="Update Profile" class="btn btn-sm btn-primary" role="button">
+                    </div>
+                </div>
+            </div>
+
+        </form>
+    </div>
+
+    {% endblock %}

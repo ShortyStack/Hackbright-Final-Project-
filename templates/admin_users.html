@@ -1,0 +1,118 @@
+{% extends "base-authenticated.html" %}
+{% block title %}Admin Users{% endblock %}
+
+{% block content %}
+
+
+<div class="jumbotron">
+    <div class="container">
+        <h1>Admin Users</h1>
+    </div>
+</div>
+
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th>User ID</th>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Email</th>
+        <th>Admin</th>
+        <th>Delete</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        {% for user in users|sort(attribute="user_id") %}
+        <td style="vertical-align:middle">{{ user.user_id }}</td>
+        <td style="vertical-align:middle">{{ user.first_name.title() }}</td>
+        <td style="vertical-align:middle">{{ user.last_name.title() }}</td>
+        <td style="vertical-align:middle">{{ user.email }}</td>
+        <td style="vertical-align:middle">{{ user.admin }}</td>
+        <td style="vertical-align:middle">
+            <form action="/delete_user" method="post">
+                <input type="hidden" name="user_id" value={{ user.user_id }}>
+                <input type="hidden" name="email" value={{ user.email }}>
+                <input type="submit" value="x" class="btn btn-xs btn-danger" role="button"
+                       title="Delete {{ user.email }} Fund"></form>
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+
+<div class="container">
+    <div class="row">
+        <form action="/add_user" method="post">
+
+            <div class="col-md-3">
+                <div class="input-group">
+                    <span class="input-group-addon" id="basic-addon1">New User</span>
+                    <input type="text" name="first_name" class="form-control" placeholder="First"
+                           aria-describedby="basic-addon1">
+                </div>
+            </div>
+
+            <div class="col-md-2">
+                <div class="input-group">
+                    <input type="text" name="last_name" class="form-control" placeholder="Last"
+                           aria-describedby="basic-addon2">
+                </div>
+            </div>
+
+            <div class="col-md-2">
+                <div class="input-group">
+                    <input type="text" name="email" class="form-control" placeholder="user@domain.com"
+                           aria-describedby="basic-addon3">
+                </div>
+            </div>
+
+            <div class="col-md-2">
+                <div class="input-group">
+                    <input type="text" name="address" class="form-control" placeholder="Street Address"
+                           aria-describedby="basic-addon3">
+                </div>
+            </div>
+
+
+            <div class="col-md-2">
+                <div class="input-group">
+                    <input type="number" name="zipcode" class="form-control" placeholder="Zipcode"
+                           aria-describedby="basic-addon3">
+                </div>
+            </div>
+    </div>
+
+    <div class="row">
+        <p></p>
+    </div>
+
+    <div class="row">
+
+        <div class="col-md-2">
+            <div class="input-group">
+                <input type="password" name="password" class="form-control" placeholder="password"
+                       aria-describedby="basic-addon5">
+            </div>
+        </div>
+
+        <div class="col-md-1">
+            <div class="input-group">
+                <input type="checkbox" name="admin" value="True" class="form-control"
+                       aria-describedby="basic-addon4">
+            </div>
+        </div>
+
+        <div class="col-md-1">
+            <div class="input-group">
+                <input type="submit" value="Add User" class="btn btn-sm btn-primary" role="button">
+            </div>
+        </div>
+
+        </form>
+    </div>
+    <!-- /row -->
+</div>
+
+{% endblock %}

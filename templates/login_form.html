@@ -5,20 +5,27 @@
 
 
 <div class="jumbotron">
-    <h1>Login</h1>
+    <div class="container">
+        <h1>Login</h1>
+    </div>
+</div>
 
+
+<div class="container">
     <div class="col-md-3">
         <form role="form" action="/login-process" method="POST">
 
 
             <div class="form-group">
                 <label for="enteremail">Email Address</label>
-                <input id="enteremail" class="form-control" type="email" placeholder="Email address" name="email" required autofocus>
+                <input id="enteremail" class="form-control" type="email" placeholder="Email address" name="email"
+                       required autofocus>
             </div>
 
             <div class="form-group">
                 <label for="enterpassword">Password</label>
-                <input id="enterpassword" class="form-control" type="password" placeholder="Password" name="password" required>
+                <input id="enterpassword" class="form-control" type="password" placeholder="Password" name="password"
+                       required>
             </div>
 
             <div>
@@ -26,31 +33,8 @@
             </div>
         </form>
     </div>
+</div>
 
-
-        <!--  <h1>Login</h1
-
-     <form action="/login-process" method="POST">
-
-        <div>
-            <label>Email:
-                <input type="email" name="email" required>
-            </label>
-        </div>
-
-        <div>
-            <label>Password:
-                <input type="password" name="password" required>
-            </label>
-        </div>
-
-        <div>
-            <input type="submit" value="Log In">
-        </div>
-
-    </form>-->
-
-</div> <!-- Close Jumbotron div -->
 
 {% endblock %}
 

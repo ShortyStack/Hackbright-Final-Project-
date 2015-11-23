@@ -5,19 +5,21 @@
 
 
 <div class="jumbotron">
-    <!-- Choose a genre to get a randomly chosen movie -->
-
     <div class="container">
-        <h3><b>Movie Source</b></h3>
+        <h1>Let's have fun</h1>
+    </div>
+</div>
 
-        <div class="border">
-            Please choose your preferred source:
-            <br><br>
-        </div>
 
-        <div>
+<div class="container">
+    <div class="row">
+
+        <div class="col-md-6">
+            <h2>Preferred Source:</h2>
+
+            <p>
+
             <form action="/step_3" method="post">
-
                 <select name="selection">
                     <optgroup label="Free Sources">
                         <option value="xfinity">Xfinity</option>
@@ -33,28 +35,21 @@
                         <option value="disney_movies_anywhere">Disney Movies</option>
                     </optgroup>
                 </select>
-
-                <!-- Input address to get a randomly chosen restaurant based on location  -->
-
-                <h3><b>What is for Dinner?</b></h3>
-
-                <div class="border">
-                    Please enter your information:
-                    <br><br>
-                </div>
-
-                <label>Street Address:<br>
-                    <input type="text" name="address" value="{{ session['street_address'] }}"></label>
-                <br><br>
-
-                <label>Zipcode:<br>
-                    <input type="number" name="zipcode" value="{{ session['zipcode'] }}"></label>
-                <br><br>
-
-                <input type="submit" value="Pick Food and Movie">
-            </form>
+            </p>
         </div>
-    </div> <!-- Close Container -->
-</div> <!-- Close Jumbotron div -->
+
+        <div class="col-md-6">
+            <h2>Delivery Location?</h2>
+
+            <p></p><label>Street Address:<br>
+            <input type="text" name="address" value="{{ session['street_address'] }}"></label></p>
+            <p></p><label>Zipcode:<br>
+            <input type="number" name="zipcode" value="{{ session['zipcode'] }}"></label></p>
+            <p></p><input type="submit" value="Pick Food and Movie">
+            </form></p>
+        </div>
+    </div>
+    <!-- Close Container -->
+
 
 {% endblock %}
