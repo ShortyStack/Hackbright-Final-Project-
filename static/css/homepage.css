@@ -1,0 +1,10 @@
+footer {
+background-color: #FFF;
+position:fixed;
+bottom: 0px;
+width: 100%;
+text-align: center;
+}
+<footer align="center">
+    <p>March 25, 2</p>
+</footer>

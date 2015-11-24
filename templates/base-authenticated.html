@@ -18,18 +18,18 @@
     <!-- Custom styles for this template -->
     <link href="/static/css/navbar-static-top.css" rel="stylesheet">
 
-    <!-- Latest compiled and minified JavaScript -->
-    <script src="/static/js/bootstrap.min.js"></script>
-
     <!-- JQuery -->
     <script src="/static/js/jquery.js"></script>
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="/static/js/bootstrap.min.js"></script>
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
         <!--[if lt IE 9]>
     <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
     <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif[-->
-
+    <link href='https://fonts.googleapis.com/css?family=Lobster|Courgette' rel='stylesheet' type='text/css'>
 </head>
 <body>
 
@@ -37,7 +37,7 @@
 <!--#######################    NAVBAR   ##################-->
 
 <nav class="navbar navbar-inverse navbar-fixed-top">
-    <div class="container">
+    <div class="container-fluid">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
                     aria-expanded="false" aria-controls="navbar">
@@ -67,34 +67,40 @@
 </nav>
 
 
-<!--#######################   FLASH    ##################-->
-
-{% with messages = get_flashed_messages(with_categories=true) %}
-<!-- Categories: success (green), info (blue), warning (yellow), danger (red) -->
-{% if messages %}
-{% for category, message in messages %}
-<div class="alert alert-{{ category }} alert-dismissible" role="alert">
-    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
-            aria-hidden="true">&times;</span></button>
-    <!-- <strong>Title</strong> --> {{ message }}
-</div>
-{% endfor %}
-{% endif %}
-{% endwith %}
-
-
-<!--#######################  CONTENT   ##################-->
-
 <div class="container">
+    <!--#######################   FLASH    ##################-->
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    <!-- Categories: success (green), info (blue), warning (yellow), danger (red) -->
+    {% if messages %}
+    {% for category, message in messages %}
+    <div class="alert alert-{{ category }} alert-dismissible" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+                aria-hidden="true">&times;</span></button>
+        <!-- <strong>Title</strong> --> {{ message }}
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+
+    <!--#######################  CONTENT   ##################-->
+
+    <!--<div class="container">-->
     {% block content %}
     {% endblock %}
 </div>
 
 <!--#######################    FOOTER   ##################-->
 
+<!--#######################    FOOTER   ##################-->
+
 <footer class="footer">
     <div class="container">
-        <p class="text-muted">Put footer information here, like a disclaimer.</p>
+        <div class="col-md-12">
+            <p class="text-muted">This site is not affiliated with, maintained by, or in any way officially connected
+                with Netflix Inc. or any of its business units.</p>
+        </div>
     </div>
 </footer>
 

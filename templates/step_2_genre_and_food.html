@@ -6,50 +6,50 @@
 
 <div class="jumbotron">
     <div class="container">
-        <h1>Let's have fun</h1>
+        <h3>What are we doing tonight?</h3>
     </div>
 </div>
 
 
-<div class="container">
+<div class="container-fluid">
     <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <div class="col-md-6">
+                <h2>Preferred Source:</h2>
 
-        <div class="col-md-6">
-            <h2>Preferred Source:</h2>
+                <p>
 
-            <p>
+                <form action="/step_3" method="post">
+                    <select name="selection">
+                        <optgroup label="Free Sources">
+                            <option value="xfinity">Xfinity</option>
+                            <option value="hulu_free">Hulu</option>
+                        </optgroup>
+                        <optgroup label="Subscription">
+                            <!--<option value="amazon prime">Amazon Prime</option>-->
+                            <option value="hbo_now">HBO Now</option>
+                            <option value="showtime">Showtime</option>
+                        </optgroup>
+                        <optgroup label="Purchase">
+                            <option value="itunes">iTunes</option>
+                            <option value="disney_movies_anywhere">Disney Movies</option>
+                        </optgroup>
+                    </select>
+                </p>
+            </div>
 
-            <form action="/step_3" method="post">
-                <select name="selection">
-                    <optgroup label="Free Sources">
-                        <option value="xfinity">Xfinity</option>
-                        <option value="hulu_free">Hulu</option>
-                    </optgroup>
-                    <optgroup label="Subscription">
-                        <!--<option value="amazon prime">Amazon Prime</option>-->
-                        <option value="hbo_now">HBO Now</option>
-                        <option value="showtime">Showtime</option>
-                    </optgroup>
-                    <optgroup label="Purchase">
-                        <option value="itunes">iTunes</option>
-                        <option value="disney_movies_anywhere">Disney Movies</option>
-                    </optgroup>
-                </select>
-            </p>
-        </div>
+            <div class="col-md-6">
+                <h2>Delivery Location?</h2>
 
-        <div class="col-md-6">
-            <h2>Delivery Location?</h2>
-
-            <p></p><label>Street Address:<br>
-            <input type="text" name="address" value="{{ session['street_address'] }}"></label></p>
-            <p></p><label>Zipcode:<br>
-            <input type="number" name="zipcode" value="{{ session['zipcode'] }}"></label></p>
-            <p></p><input type="submit" value="Pick Food and Movie">
-            </form></p>
+                <p></p><label>Street Address:<br>
+                <input type="text" name="address" value="{{ session['street_address'] }}"></label></p>
+                <p></p><label>Zipcode:<br>
+                <input type="number" name="zipcode" value="{{ session['zipcode'] }}"></label></p>
+                <p></p><input type="submit" value="Pick Food and Movie">
+                </form></p>
+            </div>
         </div>
     </div>
-    <!-- Close Container -->
-
+</div>
 
 {% endblock %}

@@ -1,16 +1,45 @@
 body {
-    background-color: WhiteSmoke;
+    background-color: url('Splitshire-8881.jpg');
+    font-family: 'Courgette', cursive;
+    padding-top: 70px;
+    }
+.jumbotron{
+    font-family: 'Courgette', cursive;
 }
+
 
 h1 {
     color: white;
     margin-left: 100px;
+    font-family: 'Courgette', cursive;
 }
 
 .navbar {
-  background-color: #888888;
+  background-color: #Red;
+  position: relative;
 }
 
 .nav navbar-nav {
   background-color: #888888;
+}
+
+.container {
+    position: relative;
+}
+
+footer {
+background-color: #FFF;
+position:fixed;
+bottom: 0px;
+width: 100%;
+text-align: center;
+font-family: 'Courgette', cursive; font-weight: 400;
+}
+
+.full {
+  background: url('Splitshire-8881.jpg') no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
 }

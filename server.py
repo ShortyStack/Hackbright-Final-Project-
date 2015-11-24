@@ -2,18 +2,18 @@
 #
 # TODO:
 # 1. Add more robust error handling (talk to API and web server is down........)  *
-# 2. Add admin page (add users, delete users, view audit logs)
-# 4. Add modal windows for movie and food execution  ***
-# 5. Use Ajax to display loading animated gif while talking to API's  *
-# 6. Add geolocation for users food delivery address screen  **
-# 7. Deploy to [Heroku] server  *
-# 8. What do I need to do specifically for the admin information (@app.route ("/login_process")
+# 2. Add modal windows for movie and food execution  ***
+# 4. Add geolocation for users food delivery address screen  **
+# 5. Deploy to [Heroku] server
+# 6. Replace favicon
 #
 # ChangeLog:
 # + Got basic MVP working (2015-11-15)
-# + Replaced genre section to movie source section. (This is in step_2)
-# + Add non free sources (Amazon, HBO....)
-# + Add event audit logs (user-agent, referrer, client IP address)
+# + Replaced genre section to movie source section. (This is in step_2) (11-16-15)
+# + Add non free sources (Amazon, HBO....) (11-17-15)
+# + Added event audit logs (user-agent, referrer, client IP address) (11-22-15)
+# + Added admin page (add users, delete users, view audit logs) (11-22-15)
+# + Added Ajax to display loading animated gif while talking to API's (11-19-15)
 
 
 """
@@ -540,7 +540,7 @@ def audit_event(user_id=None, event=None):
 def main():
     # We have to set debug=True here, since it has to be True at the point
     # that we invoke the DebugToolbarExtension
-    app.debug = True
+    app.debug = False
 
     # Raise error if Jinja encounters a problem
     app.jinja_env.undefined = StrictUndefined
