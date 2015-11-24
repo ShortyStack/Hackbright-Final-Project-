@@ -185,7 +185,7 @@ def register_process():
     zipcode = request.form['zipcode']
     first_name = request.form['first_name']
     last_name = request.form['last_name']
-    admin = 0
+    admin = False
 
     # Check if this email address has already registered an account
     user = User.query.filter_by(email=email).first()
