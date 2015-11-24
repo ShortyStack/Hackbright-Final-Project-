@@ -528,7 +528,16 @@ def audit_event(user_id=None, event=None):
         else:
             user_id = 0  # User number has to exist...could cretae a user with id=0 for auditing
     utc_timestamp = datetime.utcnow()
-    entry = Audit(timestamp=utc_timestamp, user_id=user_id, ip=request.remote_addr,
+
+    # Heroku doesn't easily give the IP address of the client. However, the client IP address
+    # can be found as the last item in the X-Forwarded-For list.
+    provided_ips = request.headers.getlist("X-Forwarded-For")[-1]
+    if provided_ips:
+        ip_address = provided_ips[-1]
+    else:
+        ip_address = request.remote_addr
+
+    entry = Audit(timestamp=utc_timestamp, user_id=user_id, ip=ip_address,
                   user_agent=request.headers.get('User-Agent'), event=event)
     db.session.add(entry)
     db.session.commit()
