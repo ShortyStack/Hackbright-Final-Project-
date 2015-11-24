@@ -85,8 +85,7 @@ def connect_to_db(app):
     """Connect the database to our Flask app."""
 
     # Configure to use our SQLite database. Enter sqlite3 netflixandchow.db
-    DATABASE_URL = os.environ.get("DATABASE_URL")
-    app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL")
     # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///netflixandchow.db'
     db.app = app
     db.init_app(app)
