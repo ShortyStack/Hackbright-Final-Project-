@@ -531,7 +531,7 @@ def audit_event(user_id=None, event=None):
 
     # Heroku doesn't easily give the IP address of the client. However, the client IP address
     # can be found as the last item in the X-Forwarded-For list.
-    provided_ips = request.headers.getlist("X-Forwarded-For")[-1]
+    provided_ips = request.headers.getlist("X-Forwarded-For")
     if provided_ips:
         ip_address = provided_ips[-1]
     else:
