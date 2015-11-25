@@ -56,7 +56,8 @@ app = Flask(__name__, static_folder='static')
 # If you want to generate random key, go into Python and type:
 # >>> import os
 # >>> os.urandom(24)
-app.secret_key = "&\xd9\x9d\x14\x0b\xa7\xdc\xa1fJ;\xa2-\xff\xc9\x9fdh\xfc.\xa9\xdf\xc1\x99"
+
+app.secret_key = os.environ.get("SECRET_KEY", "testsecretkey")
 
 
 ############################################################################
@@ -530,7 +531,7 @@ def audit_event(user_id=None, event=None):
     utc_timestamp = datetime.utcnow()
 
     # Heroku doesn't easily give the IP address of the client. However, the client IP address
-    # can be found as the last item in the X-Forwarded-For list.
+    # can be found as the last item in the X-Forwarded-For list. Found on Stack Overflow.
     provided_ips = request.headers.getlist("X-Forwarded-For")
     if provided_ips:
         ip_address = provided_ips[-1]
@@ -549,7 +550,7 @@ def audit_event(user_id=None, event=None):
 def main():
     # We have to set debug=True here, since it has to be True at the point
     # that we invoke the DebugToolbarExtension
-    app.debug = False
+    # app.debug = False
 
     # Raise error if Jinja encounters a problem
     app.jinja_env.undefined = StrictUndefined
@@ -562,7 +563,8 @@ def main():
 
     # Start the webserver
     port = int(os.environ.get("PORT", 5000))
-    app.run(debug=True, host="0.0.0.0", port=port)
+    debug = "NO_DEBUG" not in os.environ
+    app.run(debug=debug, host="0.0.0.0", port=port)
 
 
 if __name__ == "__main__":

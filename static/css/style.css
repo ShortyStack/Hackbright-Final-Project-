@@ -6,7 +6,9 @@ body {
 .jumbotron{
     font-family: 'Courgette', cursive;
 }
-
+.navbar-brand{
+    font-family: 'Courgette', cursive;
+}
 
 h1 {
     color: white;
