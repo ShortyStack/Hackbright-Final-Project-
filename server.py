@@ -4,8 +4,7 @@
 # 1. Add more robust error handling (talk to API and web server is down........)  *
 # 2. Add modal windows for movie and food execution  ***
 # 4. Add geolocation for users food delivery address screen  **
-# 5. Deploy to [Heroku] server
-# 6. Replace favicon
+# 5. Testing with unittest
 #
 # ChangeLog:
 # + Got basic MVP working (2015-11-15)
@@ -14,6 +13,7 @@
 # + Added event audit logs (user-agent, referrer, client IP address) (11-22-15)
 # + Added admin page (add users, delete users, view audit logs) (11-22-15)
 # + Added Ajax to display loading animated gif while talking to API's (11-19-15)
+# + Deployed to [Heroku] server
 
 
 """
@@ -25,6 +25,7 @@ Written by: Wendy Zenone (2015-11-14)
 # Import local libraries
 import os
 from datetime import datetime
+from datetime import timedelta
 from random import choice
 
 # Import third party libraries
@@ -98,12 +99,20 @@ def admin_required(f):
 
 
 ############################################################################
+# Session Timeout
+
+@app.before_request
+def make_session_permanent():
+    session.permanent = True
+    app.permanent_session_lifetime = timedelta(minutes=180)
+
+
+############################################################################
 # Homepage
 
 @app.route("/")
 def homepage():
     """ This is the homepage """
-
     if not session.get("user_id"):
         return render_template("/homepage.html")
     else:
@@ -142,7 +151,7 @@ def login_process():
         audit_event(event="User successfully logged in")
         return redirect("/")
     else:
-        print "Failed login attempt: {}:{}".format(email, password)  # DEBUG - Delete before go-live
+        print "Failed login attempt: {}:{}".format(email, password)
         flash("Invalid login", "info")
         audit_event(event="Failed login attempt ({}:{})".format(email, password))
         return redirect("/")
@@ -563,7 +572,7 @@ def main():
 
     # Start the webserver
     port = int(os.environ.get("PORT", 5000))
-    debug = "NO_DEBUG" not in os.environ
+    debug = 'ALLOW_DEBUG' not in os.environ
     app.run(debug=debug, host="0.0.0.0", port=port)
 
 
