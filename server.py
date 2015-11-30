@@ -555,6 +555,23 @@ def audit_event(user_id=None, event=None):
 
 
 ############################################################################
+# Error Pages
+
+@app.errorhandler(404)
+def page_not_found(error):
+    """404 Page Not Found handling"""
+
+    return render_template('/errors/404.html'), 404
+
+
+@app.errorhandler(500)
+def internal_error(error):
+    # db.session.rollback()
+    """500 Error handling """
+
+    return render_template('/errors/500.html'), 500
+
+############################################################################
 # Main routine
 
 def main():

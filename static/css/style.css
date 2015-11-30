@@ -51,10 +51,3 @@ text-align: center;
 font-family: 'Courgette', cursive; font-weight: 400;
 }
 
-.full {
-  background: url('Splitshire-8881.jpg') no-repeat center center fixed;
-  -webkit-background-size: cover;
-  -moz-background-size: cover;
-  -o-background-size: cover;
-  background-size: cover;
-}

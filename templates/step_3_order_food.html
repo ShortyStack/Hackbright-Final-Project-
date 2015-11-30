@@ -6,46 +6,39 @@
 
 <div class="jumbotron">
     <div class="container">
-        <div id="my_choices"><p></p></div>
         <div id='loadingmessage' style='display:none'>
             <img class="center-block" src='/static/img/loading.gif'>
         </div>
-    </div>
-</div>
 
+        <table class="table table-striped" id="my_choices">
+        </table>
 
         <script>
             $('#loadingmessage').show();
             $.getJSON('/get_choices', function (data) {
                     $('#loadingmessage').hide();
-                    $("#my_choices").append('<div class="containerLeft">');
-                    $("#my_choices").append('<div class="row">');
-                    $("#my_choices").append('<div class="col-xs-6">');
-                    $("#my_choices").append('<h3>Your Selection</h3>');
+                    $("#my_choices").append('<tr>');
+                    $("#my_choices").append('<td>');
+                    $("#my_choices").append('<h2>Your Restaurant</h2>');
                     $("#my_choices").append('<p>Restaurant: ' + data.restaurant_name + '</p>');
                     $("#my_choices").append('<p>Restaurant URL:<a href="' + data.restaurant_url + '" target="_blank"> Link</a></p>');
-                    $("#my_choices").append('<div class="col-xs-6">');
-                    $("#my_choices").append('<div class="containerRight">');
+                    $("#my_choices").append('<p><img src="' + data.movie_poster + '" width=50% class="img-rounded"></p>');
+                    $("#my_choices").append('</td>');
+                    $("#my_choices").append('<td>');
+                    $("#my_choices").append('<h2>Your Movie</h2>');
                     $("#my_choices").append('<p>Movie Title: ' + data.movie_title + '</p>');
-                    $("#my_choices").append('<div class="col-xs-6">');
                     $("#my_choices").append('<p>Movie Rating: ' + data.movie_rating  + '</p>');
-                    $("#my_choices").append('<div class="col-xs-6">');
                     $("#my_choices").append('<p>Movie Release Year: ' + data.movie_release_year  + '</p>');
-                    $("#my_choices").append('<div class="col-xs-6">');
                     $("#my_choices").append('<p>Movie Service:</b> ' + data.movie_service + '</p>');
-                    $("#my_choices").append('<div class="col-xs-6">');
                     $("#my_choices").append('<p>Movie Playback URL:</b><a href="' + data.movie_playback_url + '" target="_blank"> Link</a></p>');
-                    $("#my_choices").append('<div class="row">');
-                    $("#my_choices").append('<div class="col-xs-6">');
-                    $("#my_choices").append('<p><img src="' + data.movie_poster + '"></p>');
-                    $("#my_choices").append('</div></div></div>');
+                    $("#my_choices").append('</td>');
+                    $("#my_choices").append('</tr>');
             });
-
-
         </script>
 
     </div>
+    <!-- close container -->
 
-</div>
+</div> <!-- close Jumbotron -->
 
 {% endblock %}
