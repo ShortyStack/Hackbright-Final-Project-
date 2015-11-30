@@ -1,13 +1,25 @@
 body {
-    background-color: url('Splitshire-8881.jpg');
+    background-color: lightblue;
     font-family: 'Courgette', cursive;
     padding-top: 70px;
     }
-.jumbotron{
-    font-family: 'Courgette', cursive;
-}
+
 .navbar-brand{
     font-family: 'Courgette', cursive;
+}
+.jumbotron
+
+.myChoices {
+padding-bottom: 70px;
+
+}
+.containerRight {
+    float: right;
+}
+
+.containerLeft {
+    float: right;
+    padding-bottom:70px;
 }
 
 h1 {
@@ -27,10 +39,11 @@ h1 {
 
 .container {
     position: relative;
+    font-family: 'Courgette', cursive;
 }
 
 footer {
-background-color: #FFF;
+background-color: FFF#;
 position:fixed;
 bottom: 0px;
 width: 100%;

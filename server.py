@@ -5,6 +5,7 @@
 # 2. Add modal windows for movie and food execution  ***
 # 4. Add geolocation for users food delivery address screen  **
 # 5. Testing with unittest
+# 6. Custom error pages (404, 500, etc.)
 #
 # ChangeLog:
 # + Got basic MVP working (2015-11-15)
