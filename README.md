@@ -4,6 +4,7 @@
 
 ----------
 Built by [Wendy Zenone](http://www.linkedin.com/in/wendyzenone)
+
 **[www.netflixandchow.com](http://www.netflixandchow.com/)**
 
 ## **The Project** ##
