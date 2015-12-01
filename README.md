@@ -26,9 +26,9 @@ Stop losing precious time deciding what to eat and watch. Sit back, relax and Ne
  7. JavaScript
  8. jQuery
  9. JSON
-10. PostgreSQL
-11. Python
-12. SQLAlchemy 
+ 10. PostgreSQL
+ 11. Python
+ 12.  SQLAlchemy 
  
 ## **API's Used** ##
 
