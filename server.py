@@ -495,8 +495,6 @@ def talk_to_delivery_api(address, zipcode):
     """This function will make the request to delivery.com's API, and return the
     result(s)"""
 
-    # Below creates this: https://api.delivery.com/merchant/search/delivery?client_id=ODYzNzM4Mjg3NGI5YzUxNzdhOGQ4MzE0MmVlN2UzZmRl&address=100 Winchester Circle 95032
-
     # This is the URL for the API endpoint at delivery.com
     url = DELIVERY_BASE_API_URL + DELIVERY_ENDPOINT
 
