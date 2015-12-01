@@ -4,17 +4,18 @@
 
 ----------
 Built by [Wendy Zenone](http://www.linkedin.com/in/wendyzenone)
+**[www.netflixandchow.com](http://www.netflixandchow.com/)**
 
 ## **The Project** ##
 ---------------
 
-The workday is finally over, and you're ready for some relaxing time at home with dinner and a movie. Allow Netflix and Chow to plan your evening! 
+The workday is finally over, and you're ready for some relaxing time at home with dinner and a movie. Allow *Netflix and Chow* to plan your evening! 
 
-Once users create an account, choose a streaming source and enter their address, the magic will begin! Netflix and Chow will automagically choose a movie for you to enjoy and restaurant to order dinner from. Users will receive a unique combination consisting of a movie and a restaurant based on the entered location. 
+Once users create an account, choose a streaming source and enter their address, the magic will begin! *Netflix and Chow* will automagically choose a movie for you to enjoy and restaurant to order dinner from. Users will receive a unique combination consisting of a movie and a restaurant based on the entered location. 
 
 This app also provides authorized account holders with administrative functions like managing users and viewing audit logs. Though we like to have fun, security is also a priority!  
 
-Stop losing precious time deciding what to eat and watch. Sit back, relax and Netflix and Chow.
+Stop losing precious time deciding what to eat and watch. Sit back, relax and *Netflix and Chow*.
 
 ## **Technologies Used** ##
  1. AJAX
@@ -55,7 +56,7 @@ User then chooses streaming source and enters delivery address.
 
 ![Movie and Address](https://lh3.googleusercontent.com/-e65y_OxddfM/Vl0aQZHMS0I/AAAAAAAACuY/EqXxIK-ooPk/s0/Screen+Shot+2015-11-30+at+7.50.35+PM.png "Movie and Address")
 
-**Netflix and Chow Automagically Plans Your Evening!** 
+***Netflix and Chow* Automagically Plans Your Evening!** 
 Users can then click the link to stream the film and click the link to order dinner from the randomly chosen restaurant.
 
 ![Dinner and Movie Choice](https://lh3.googleusercontent.com/-I9MkvLNLQqQ/Vl0a4fLrnyI/AAAAAAAACuo/0t0ZxtI1diA/s0/Screen+Shot+2015-11-30+at+7.56.44+PM.png "Screen Shot 2015-11-30 at 7.56.44 PM.png")
