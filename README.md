@@ -29,7 +29,7 @@ Stop losing precious time deciding what to eat and watch. Sit back, relax and Ne
  10. PostgreSQL
  11. Python
  12.  SQLAlchemy 
- 13.  Unittest
+ 13. Unittest
  
 ## **API's Used** ##
 
@@ -70,6 +70,11 @@ Authorized administrators have the ability to manage (add/remove) existing users
 
 ![enter image description here](https://lh3.googleusercontent.com/-40TXhLiur9M/Vl0jO3cT_5I/AAAAAAAACvg/W58zPPQ8L-4/s0/Screen+Shot+2015-11-30+at+8.25.35+PM.png "Admin Users") 
 
+**Error Pages**
+If a user tries to search for a non-existent page, they will get a custom error page. 
+
+![404](https://lh3.googleusercontent.com/-KF6InUKtFSE/Vl1BXAmEiLI/AAAAAAAACwY/Dx9LrE_axGo/s0/Screen+Shot+2015-11-30+at+10.41.49+PM.png "404")
+
 ## **Favorite Challenges** ##
 
 
@@ -77,6 +82,8 @@ Authorized administrators have the ability to manage (add/remove) existing users
 
 
 Learning how to use an API was my favorite challenge. I never used an API before so I had to do extensive research which made the experience like a treasure hunt. Finally turning a JSON response into a Python dictionary that enabled me to pull out the specific information I was looking for was deeply satisfying. Coding truly feels like magic at times.
+
+Unittests are also very valuable and I wanted to get my feet wet and learn how to perform some simple tests. It was a new skill to learn and I enjoyed seeing my tests return 0 failures. 
 
 ## **About the Developer** ##
 
