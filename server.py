@@ -14,7 +14,7 @@
 # + Added event audit logs (user-agent, referrer, client IP address) (11-22-15)
 # + Added admin page (add users, delete users, view audit logs) (11-22-15)
 # + Added Ajax to display loading animated gif while talking to API's (11-19-15)
-# + Deployed to [Heroku] server
+# + Deployed to [Heroku] server 
 
 
 """
