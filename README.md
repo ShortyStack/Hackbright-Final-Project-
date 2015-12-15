@@ -5,16 +5,18 @@
 ----------
 Built by [Wendy Zenone](http://www.linkedin.com/in/wendyzenone)
 
+**[www.netflixandchow.com](http://www.netflixandchow.com/)**
+
 ## **The Project** ##
 ---------------
 
-The workday is finally over, and you're ready for some relaxing time at home with dinner and a movie. Allow Netflix and Chow to plan your evening! 
+The workday is finally over, and you're ready for some relaxing time at home with dinner and a movie. Allow *Netflix and Chow* to plan your evening! 
 
-Once users create an account, choose a streaming source and enter their address, the magic will begin! Netflix and Chow will automagically choose a movie for you to enjoy and restaurant to order dinner from. Users will receive a unique combination consisting of a movie and a restaurant based on the entered location. 
+Once users create an account, choose a streaming source and enter their address, the magic will begin! *Netflix and Chow* will automagically choose a movie for you to enjoy and restaurant to order dinner from. Users will receive a unique combination consisting of a movie and a restaurant based on the entered location. 
 
 This app also provides authorized account holders with administrative functions like managing users and viewing audit logs. Though we like to have fun, security is also a priority!  
 
-Stop losing precious time deciding what to eat and watch. Sit back, relax and Netflix and Chow.
+Stop losing precious time deciding what to eat and watch. Sit back, relax and *Netflix and Chow*.
 
 ## **Technologies Used** ##
  1. AJAX
@@ -29,7 +31,7 @@ Stop losing precious time deciding what to eat and watch. Sit back, relax and Ne
  10. PostgreSQL
  11. Python
  12.  SQLAlchemy 
- 13.  Unittest
+ 13. Unittest
  
 ## **API's Used** ##
 
@@ -55,7 +57,7 @@ User then chooses streaming source and enters delivery address.
 
 ![Movie and Address](https://lh3.googleusercontent.com/-e65y_OxddfM/Vl0aQZHMS0I/AAAAAAAACuY/EqXxIK-ooPk/s0/Screen+Shot+2015-11-30+at+7.50.35+PM.png "Movie and Address")
 
-**Netflix and Chow Automagically Plans Your Evening!** 
+***Netflix and Chow* Automagically Plans Your Evening!** 
 Users can then click the link to stream the film and click the link to order dinner from the randomly chosen restaurant.
 
 ![Dinner and Movie Choice](https://lh3.googleusercontent.com/-I9MkvLNLQqQ/Vl0a4fLrnyI/AAAAAAAACuo/0t0ZxtI1diA/s0/Screen+Shot+2015-11-30+at+7.56.44+PM.png "Screen Shot 2015-11-30 at 7.56.44 PM.png")
@@ -70,6 +72,11 @@ Authorized administrators have the ability to manage (add/remove) existing users
 
 ![enter image description here](https://lh3.googleusercontent.com/-40TXhLiur9M/Vl0jO3cT_5I/AAAAAAAACvg/W58zPPQ8L-4/s0/Screen+Shot+2015-11-30+at+8.25.35+PM.png "Admin Users") 
 
+**Error Pages**
+If a user tries to search for a non-existent page, they will get a custom error page. 
+
+![404](https://lh3.googleusercontent.com/-KF6InUKtFSE/Vl1BXAmEiLI/AAAAAAAACwY/Dx9LrE_axGo/s0/Screen+Shot+2015-11-30+at+10.41.49+PM.png "404")
+
 ## **Favorite Challenges** ##
 
 
@@ -77,6 +84,8 @@ Authorized administrators have the ability to manage (add/remove) existing users
 
 
 Learning how to use an API was my favorite challenge. I never used an API before so I had to do extensive research which made the experience like a treasure hunt. Finally turning a JSON response into a Python dictionary that enabled me to pull out the specific information I was looking for was deeply satisfying. Coding truly feels like magic at times.
+
+Unittests are also very valuable and I wanted to get my feet wet and learn how to perform some simple tests. It was a new skill to learn and I enjoyed seeing my tests return 0 failures. 
 
 ## **About the Developer** ##
 
