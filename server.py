@@ -152,9 +152,9 @@ def login_process():
         audit_event(event="User successfully logged in")
         return redirect("/")
     else:
-        print "Failed login attempt: {}:{}".format(email, password)
+        print "Failed login attempt"
         flash("Invalid login", "info")
-        audit_event(event="Failed login attempt ({}:{})".format(email, password))
+        audit_event(event="Failed login attempt")
         return redirect("/")
 
 
